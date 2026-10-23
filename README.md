@@ -55,6 +55,87 @@ Give the API a URL and it runs a full passive audit: it follows the redirect cha
 | Latency | ~2–10 seconds per scan (a real google.com scan through the gateway took 2.6 s) |
 | Endpoints | `GET\|POST /scan`, `GET /headers`, `GET /ssl`, `GET /health` |
 
+### Quick start
+
+Subscribe on the API's [RapidAPI page](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) (there is a free plan), copy your `X-RapidAPI-Key` from the playground, then:
+
+#### cURL
+
+```bash
+# Run a full security scan (GET with a query parameter)
+curl "https://website-security-scanner-api.p.rapidapi.com/scan?url=https://example.com" \
+  -H "X-RapidAPI-Key: YOUR_API_KEY" \
+  -H "X-RapidAPI-Host: website-security-scanner-api.p.rapidapi.com"
+
+# The same call as POST with a JSON body
+curl -X POST "https://website-security-scanner-api.p.rapidapi.com/scan" \
+  -H "X-RapidAPI-Key: YOUR_API_KEY" \
+  -H "X-RapidAPI-Host: website-security-scanner-api.p.rapidapi.com" \
+  -H "Content-Type: application/json" \
+  -d "{\"url\": \"https://example.com\"}"
+```
+
+**Response:**
+
+```json
+{
+  "url": "https://google.com",
+  "score": 76,
+  "grade": "B",
+  "summary": { "critical": 0, "high": 0, "medium": 2, "low": 3, "info": 0 },
+  "findings": [
+    { "severity": "medium", "title": "Deprecated TLS protocols enabled" },
+    { "severity": "medium", "title": "Missing Content-Security-Policy header" },
+    { "severity": "low", "title": "Missing X-Content-Type-Options header" },
+    { "severity": "low", "title": "Missing Referrer-Policy header" },
+    { "severity": "low", "title": "Cookies set without the HttpOnly flag" }
+  ]
+}
+```
+
+The scan endpoints accept **GET** (query parameters) or **POST** (JSON body with the same field names). Full details are in [`docs/website-security-scanner.md`](docs/website-security-scanner.md).
+
+### API reference
+
+#### `GET|POST /scan`
+
+The full audit: score, grade, severity summary, every individual check, and the findings list.
+
+| Parameter | Required | Notes |
+|---|---|---|
+| `url` | yes | The website to scan — a domain or a full URL, e.g. `https://example.com` |
+
+#### `GET /headers`
+
+Just the response-header part of the audit: the six security headers, cookie flags, and version disclosure (`Server` / `X-Powered-By`).
+
+| Parameter | Required | Notes |
+|---|---|---|
+| `url` | yes | The website to check |
+
+#### `GET /ssl`
+
+Just the TLS part: certificate issuer and subject, validity window, days remaining, negotiated protocol and cipher, and whether legacy TLS 1.0/1.1 are still accepted.
+
+| Parameter | Required | Notes |
+|---|---|---|
+| `url` | yes | The website to check |
+
+#### `GET /health`
+
+Returns `{"status": "ok"}` when the service is up.
+
+### Pricing
+
+| Plan | Price | Included requests | Overage |
+|---|---|---|---|
+| BASIC | Free | 2 / month (hard limit) | — |
+| PRO | $12 / month | 1,000 / month | $0.01 / request |
+| ULTRA | $29 / month | 5,000 / month | $0.006 / request |
+| MEGA | $59 / month | 20,000 / month | $0.003 / request |
+
+Subscribe and manage your plan here: **[Website Security Scanner API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api)**
+
 ## License
 
 The example code in this repository is released under the [MIT License](LICENSE). The APIs themselves are hosted services provided via RapidAPI under their plan terms.
