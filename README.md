@@ -1,13 +1,14 @@
 # dev-utility-APIs
 
-**18 production APIs on RapidAPI** by **hhelll** — image tools, website screenshots, speech-to-text, text-to-speech, OCR & PDF tools, translation, NLP utilities, IP geolocation, email validation, phone validation, domain health checks, postal codes, geocoding, VAT & IBAN validation, public holidays, currency/crypto prices, and AI email writing. Small, focused, self-hosted APIs — each one does one job well, with a free plan to try it out.
+**19 production APIs on RapidAPI** by **hhelll** — website security scanning, image tools, website screenshots, speech-to-text, text-to-speech, OCR & PDF tools, translation, NLP utilities, IP geolocation, email validation, phone validation, domain health checks, postal codes, geocoding, VAT & IBAN validation, public holidays, currency/crypto prices, and AI email writing. Small, focused, self-hosted APIs — each one does one job well, with a free plan to try it out.
 
-**17 APIs are live now.** The Weather API is built and running, and its listing is **launching soon**.
+**18 APIs are live now.** The Weather API is built and running, and its listing is **launching soon**.
 
 ## The API catalog
 
 | API | What it does | Free plan | Paid plans (PRO / ULTRA / MEGA) |
 |---|---|---|---|
+| [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — [docs](docs/website-security-scanner.md) | Passive website security audit: HTTPS & TLS health, security headers, cookie flags, exposed files (.env, .git), outdated software with known CVEs, mixed content — with a 0–100 score and grade | 2 requests/month | $12 / $29 / $59 |
 | [AI Email Writer API](https://rapidapi.com/Hitler-HlDevZDwP/api/ai-email-writer-api) — [docs](docs/ai-email-writer.md) | AI email generation: write new emails, draft replies, and subject-line ideas — with tone control, in English and Indonesian | 5 requests/month | $10 / $25 / $49 |
 | [Holidays and Business Days API](https://rapidapi.com/Hitler-HlDevZDwP/api/holidays-and-business-days-api) — [docs](docs/holidays.md) | Public holidays for 200+ countries, is-holiday / is-workday checks, and business-day counting | 5 requests/month | $9 / $19 / $39 |
 | [VAT and IBAN Validation API](https://rapidapi.com/Hitler-HlDevZDwP/api/vat-and-iban-validation-api1) — [docs](docs/vat-iban.md) | EU VAT validation via the official VIES service, EU VAT rates, and IBAN validation with bank/BIC lookup | 5 requests/month | $12 / $29 / $59 |
