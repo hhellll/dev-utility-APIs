@@ -57,7 +57,7 @@ A runnable Python example is in [`examples/prices_example.py`](../examples/price
 
 | Plan | Price | Included requests |
 |---|---|---|
-| BASIC | Free | 100 / month (hard limit) |
+| BASIC | Free | 5 / month (hard limit) |
 | PRO | $9 / month | 25,000 / month |
 | ULTRA | $25 / month | 150,000 / month |
 | MEGA | $69 / month | 600,000 / month |
