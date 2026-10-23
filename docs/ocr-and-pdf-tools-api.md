@@ -84,4 +84,4 @@ A runnable Python example is in [`examples/ocr_example.py`](../examples/ocr_exam
 
 Subscribe and manage your plan here: **[OCR and PDF Tools API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/ocr-and-pdf-tools-api)**
 
-Part of the [hhelll API family](../README.md#more-apis-by-hhelll).
+Part of the [hhelll API family](../README.md#the-api-catalog).

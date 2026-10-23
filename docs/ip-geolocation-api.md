@@ -72,4 +72,4 @@ A runnable Python example is in [`examples/ipgeo_example.py`](../examples/ipgeo_
 
 Subscribe and manage your plan here: **[IP Geolocation API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/ip-geolocation-api25)**
 
-Part of the [hhelll API family](../README.md#more-apis-by-hhelll).
+Part of the [hhelll API family](../README.md#the-api-catalog).

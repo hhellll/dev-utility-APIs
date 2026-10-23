@@ -64,4 +64,4 @@ A runnable Python example is in [`examples/prices_example.py`](../examples/price
 
 Subscribe and manage your plan here: **[Currency and Crypto Prices API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/currency-and-crypto-prices-api)**
 
-Part of the [hhelll API family](../README.md#more-apis-by-hhelll).
+Part of the [hhelll API family](../README.md#the-api-catalog).

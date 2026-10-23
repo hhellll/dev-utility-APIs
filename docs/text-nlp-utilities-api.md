@@ -82,4 +82,4 @@ A runnable Python example is in [`examples/nlp_example.py`](../examples/nlp_exam
 
 Subscribe and manage your plan here: **[Text NLP Utilities API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/text-nlp-utilities-api)**
 
-Part of the [hhelll API family](../README.md#more-apis-by-hhelll).
+Part of the [hhelll API family](../README.md#the-api-catalog).

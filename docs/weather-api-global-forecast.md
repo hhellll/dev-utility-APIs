@@ -40,4 +40,4 @@ curl "https://<gateway-host>/weather?lat=-6.2&lon=106.8" \
 | ULTRA | $29 / month | 100,000 / month |
 | MEGA | $75 / month | 500,000 / month |
 
-Part of the [hhelll API family](../README.md#more-apis-by-hhelll).
+Part of the [hhelll API family](../README.md#the-api-catalog).

@@ -64,4 +64,4 @@ A runnable Python example is in [`examples/translate_example.py`](../examples/tr
 
 Subscribe and manage your plan here: **[Translation API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/translation-api-en-id-es-fr-de-ja)**
 
-Part of the [hhelll API family](../README.md#more-apis-by-hhelll).
+Part of the [hhelll API family](../README.md#the-api-catalog).

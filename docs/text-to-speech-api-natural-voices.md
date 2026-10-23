@@ -65,4 +65,4 @@ A runnable Python example is in [`examples/tts_example.py`](../examples/tts_exam
 
 Subscribe and manage your plan here: **[Text to Speech API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/text-to-speech-api-natural-voices)**
 
-Part of the [hhelll API family](../README.md#more-apis-by-hhelll).
+Part of the [hhelll API family](../README.md#the-api-catalog).

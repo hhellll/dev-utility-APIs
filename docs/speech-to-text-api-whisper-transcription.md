@@ -64,4 +64,4 @@ A runnable Python example (submit + poll) is in [`examples/stt_example.py`](../e
 
 Subscribe and manage your plan here: **[Speech to Text API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/speech-to-text-api-whisper-transcription)**
 
-Part of the [hhelll API family](../README.md#more-apis-by-hhelll).
+Part of the [hhelll API family](../README.md#the-api-catalog).
