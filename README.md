@@ -1,6 +1,6 @@
 # dev-utility-APIs
 
-**19 production APIs on RapidAPI** by **hhelll** — website security scanning, image tools, website screenshots, speech-to-text, text-to-speech, OCR & PDF tools, translation, NLP utilities, IP geolocation, email validation, phone validation, domain health checks, postal codes, geocoding, VAT & IBAN validation, public holidays, currency/crypto prices, and AI email writing. Small, focused, self-hosted APIs — each one does one job well, with a free plan to try it out.
+**19 production APIs on RapidAPI** by **hhelll** — website security scanning, AI email writing, public holidays & business days, VAT & IBAN validation, geocoding, domain health checks, phone validation, postal codes, email validation, NLP utilities, OCR & PDF tools, speech-to-text, text-to-speech, translation, IP geolocation, website screenshots & PDF, currency/crypto prices, background removal, and weather forecasts. Small, focused, self-hosted APIs — each one does one job well, with a free plan to try it out.
 
 **18 APIs are live now.** The Weather API is built and running, and its listing is **launching soon**.
 
