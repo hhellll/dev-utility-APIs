@@ -57,7 +57,7 @@ A runnable Python example is in [`examples/translate_example.py`](../examples/tr
 
 | Plan | Price | Included requests |
 |---|---|---|
-| BASIC | Free | 10 / month (hard limit) |
+| BASIC | Free | 5 / month (hard limit) |
 | PRO | $10 / month | 1,000 / month |
 | ULTRA | $29 / month | 5,000 / month |
 | MEGA | $75 / month | 20,000 / month |
