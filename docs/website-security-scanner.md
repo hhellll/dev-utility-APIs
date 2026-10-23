@@ -70,6 +70,44 @@ Just the TLS part: certificate issuer and subject, validity window, days remaini
 
 Returns `{"status": "ok"}` when the service is up.
 
+### `POST /scan/deep`
+
+Starts an asynchronous **deep scan** — a Nuclei-powered active template scan of one host (exposures, misconfigurations, known-CVE templates) — and queues it for execution. Available on **PRO, ULTRA and MEGA**; each executed scan consumes **1 deep scan credit** (see [Plans and what you get](#plans-and-what-you-get)).
+
+| Parameter | Required | Notes |
+|---|---|---|
+| `url` | yes | The website to scan — one host per job |
+
+**Response `202 Accepted`:**
+
+```json
+{ "job_id": "ds_9f27c1a4b8", "status": "queued" }
+```
+
+Then poll `GET /scan/deep/{job_id}` for the result. The credit is consumed when execution *starts*, and stays consumed even if the target turns out to be unreachable or blocks the scanner — the work was performed. Requests rejected before execution (invalid URL, private/internal target) never consume a credit.
+
+### `GET /scan/deep/{job_id}`
+
+Returns the status of a deep scan job — `queued`, `running`, or `done` with the full findings list. Only the API key that created the job can read it. Polling never consumes deep scan credits.
+
+### `POST /scan/deep/batch`
+
+Starts one deep scan job per URL — up to **20 URLs** in a single call, one credit per host. **MEGA plan only.**
+
+| Parameter | Required | Notes |
+|---|---|---|
+| `urls` | yes | JSON array of up to 20 URLs |
+
+**Response `202 Accepted`:** a list of `{ "url": ..., "job_id": ... }` entries, one per accepted host.
+
+**Error codes (deep scan endpoints):**
+
+| Code | Meaning |
+|---|---|
+| `400` | Invalid URL, or the target resolves to a private/internal address — rejected before execution, no credit consumed |
+| `403` | Your plan does not include deep scans (BASIC), or the job belongs to a different API key |
+| `429` | Deep scan credits for this month are exhausted, or your plan's daily deep scan cap was reached |
+
 ## What gets checked
 
 - **HTTPS & redirects** — is plain HTTP redirected to HTTPS?
@@ -101,5 +139,21 @@ curl "https://website-security-scanner-api.p.rapidapi.com/scan?url=https://examp
 Paid plans are soft limits with per-request overage ($0.01 PRO / $0.006 ULTRA / $0.003 MEGA).
 
 Subscribe and manage your plan here: **[Website Security Scanner API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api)**
+
+## Plans and what you get
+
+| | **BASIC — Free** | **PRO — $12/mo** | **ULTRA — $29/mo** | **MEGA — $59/mo** |
+|---|---|---|---|---|
+| Passive scans / month | 2 (hard limit) | 1,000 (+$0.01/request overage) | 5,000 (+$0.006/request) | 20,000 (+$0.003/request) |
+| Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence & fix recommendations | Full report | Full report |
+| Advanced checks (SPF/DMARC, security.txt, HSTS preload, TLS cipher details, extended tech fingerprinting) | — | — | ✓ | ✓ |
+| Deep scan credits / month (Nuclei-powered active template scan) | — | 25 (max 5/day) | 100 (max 15/day) | 300 (max 30/day) |
+| Passive subdomain enumeration (deep scan) | — | — | ✓ | ✓ |
+| Light port check (deep scan) | — | — | — | ✓ |
+| Batch deep scan submit | — | — | — | ✓ |
+| Queue priority | — | Standard | Priority | Highest |
+| Scan result history | — | 7 days | 30 days | 90 days |
+
+**Deep scan rules:** 1 credit = 1 host scanned. A scan that has been executed consumes its credit even if the target turns out to be unreachable or blocks the scanner — the work was performed. Invalid URLs and private/internal targets are rejected *before* execution and never consume a credit. Checking a job's status or fetching its result never consumes credits.
 
 Part of the [hhelll API family](../README.md#the-api-catalog).

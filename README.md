@@ -125,6 +125,18 @@ Just the TLS part: certificate issuer and subject, validity window, days remaini
 
 Returns `{"status": "ok"}` when the service is up.
 
+#### `POST /scan/deep`
+
+Starts an asynchronous **deep scan** — a Nuclei-powered active template scan of one host — and returns `202` with a `job_id` to poll for the result. **Plans:** PRO, ULTRA and MEGA (consumes deep scan credits).
+
+#### `GET /scan/deep/{job_id}`
+
+Returns the status and, once finished, the full result of a deep scan job. Only the API key that started the job can read it, and polling never consumes credits. **Plans:** the job owner's plan.
+
+#### `POST /scan/deep/batch`
+
+Starts deep scans for up to 20 URLs in one call, one credit per host. **Plans:** MEGA only.
+
 ### Pricing
 
 | Plan | Price | Included requests | Overage |
@@ -133,6 +145,21 @@ Returns `{"status": "ok"}` when the service is up.
 | PRO | $12 / month | 1,000 / month | $0.01 / request |
 | ULTRA | $29 / month | 5,000 / month | $0.006 / request |
 | MEGA | $59 / month | 20,000 / month | $0.003 / request |
+
+#### What each plan gets
+
+| | BASIC — Free | PRO — $12/mo | ULTRA — $29/mo | MEGA — $59/mo |
+|---|---|---|---|---|
+| Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence & fix recommendations | Full report | Full report |
+| Advanced checks (SPF/DMARC, security.txt, HSTS preload, TLS cipher details, extended tech fingerprinting) | — | — | ✓ | ✓ |
+| Deep scan credits / month (Nuclei-powered active template scan) | — | 25 (max 5/day) | 100 (max 15/day) | 300 (max 30/day) |
+| Passive subdomain enumeration (deep scan) | — | — | ✓ | ✓ |
+| Light port check (deep scan) | — | — | — | ✓ |
+| Batch deep scan submit | — | — | — | ✓ |
+| Queue priority | — | Standard | Priority | Highest |
+| Scan result history | — | 7 days | 30 days | 90 days |
+
+**Deep scan rules:** 1 credit = 1 host scanned. A scan that has been executed consumes its credit even if the target turns out to be unreachable or blocks the scanner — the work was performed. Invalid URLs and private/internal targets are rejected *before* execution and never consume a credit. Checking a job's status or fetching its result never consumes credits.
 
 Subscribe and manage your plan here: **[Website Security Scanner API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api)**
 
