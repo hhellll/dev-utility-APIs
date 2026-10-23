@@ -75,7 +75,7 @@ A runnable Python example is in [`examples/nlp_example.py`](../examples/nlp_exam
 
 | Plan | Price | Included requests |
 |---|---|---|
-| BASIC | Free | 10 / month (hard limit) |
+| BASIC | Free | 5 / month (hard limit) |
 | PRO | $12 / month | 10,000 / month |
 | ULTRA | $35 / month | 50,000 / month |
 | MEGA | $99 / month | 200,000 / month |
