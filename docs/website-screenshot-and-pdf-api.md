@@ -69,7 +69,7 @@ A runnable Python example is in [`examples/screenshot_example.py`](../examples/s
 
 | Plan | Price | Included requests |
 |---|---|---|
-| BASIC | Free | 10 / month (hard limit) |
+| BASIC | Free | 5 / month (hard limit) |
 | PRO | $9 / month | 2,000 / month |
 | ULTRA | $29 / month | 15,000 / month |
 | MEGA | $79 / month | 50,000 / month |
