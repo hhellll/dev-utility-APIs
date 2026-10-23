@@ -77,7 +77,7 @@ A runnable Python example is in [`examples/ocr_example.py`](../examples/ocr_exam
 
 | Plan | Price | Included requests |
 |---|---|---|
-| BASIC | Free | 10 / month (hard limit) |
+| BASIC | Free | 5 / month (hard limit) |
 | PRO | $12 / month | 2,000 / month |
 | ULTRA | $35 / month | 10,000 / month |
 | MEGA | $99 / month | 40,000 / month |
