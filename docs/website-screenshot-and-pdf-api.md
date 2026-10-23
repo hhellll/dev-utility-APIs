@@ -76,4 +76,4 @@ A runnable Python example is in [`examples/screenshot_example.py`](../examples/s
 
 Subscribe and manage your plan here: **[Website Screenshot and PDF API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/website-screenshot-and-pdf-api)**
 
-Part of the [hhelll API family](../README.md#more-apis-by-hhelll).
+Part of the [hhelll API family](../README.md#the-api-catalog).
