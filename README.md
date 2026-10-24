@@ -1,4 +1,7 @@
+![dev-utility-APIs](assets/banner-dark.png)
+
 # dev-utility-APIs
+![APIs](https://img.shields.io/badge/APIs-19_production-blue) ![Live on RapidAPI](https://img.shields.io/badge/RapidAPI-18_live-0055ff) ![License](https://img.shields.io/badge/License-MIT-green)
 
 **19 production APIs on RapidAPI** by **hhelll** — website security scanning, AI email writing, public holidays & business days, VAT & IBAN validation, geocoding, domain health checks, phone validation, postal codes, email validation, NLP utilities, OCR & PDF tools, speech-to-text, text-to-speech, translation, IP geolocation, website screenshots & PDF, currency/crypto prices, background removal, and weather forecasts. Small, focused, self-hosted APIs — each one does one job well, with a free plan to try it out.
 
