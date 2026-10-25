@@ -63,9 +63,9 @@ curl "https://vat-and-iban-validation-api1.p.rapidapi.com/iban/validate?iban=DE8
 | Plan | Price | Included requests |
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
-| PRO | $12 / month | 3,000 / month |
-| ULTRA | $29 / month | 10,000 / month |
-| MEGA | $59 / month | 40,000 / month |
+| PRO | $5 / month | 3,000 / month |
+| ULTRA | $15 / month | 10,000 / month |
+| MEGA | $29 / month | 40,000 / month |
 
 Paid plans are soft limits with per-request overage ($0.003 PRO / $0.002 ULTRA / $0.001 MEGA).
 

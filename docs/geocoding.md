@@ -68,9 +68,9 @@ curl "https://geocoding-api5.p.rapidapi.com/search?q=Semarang" \
 | Plan | Price | Included requests |
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
-| PRO | $10 / month | 50,000 / month |
-| ULTRA | $25 / month | 250,000 / month |
-| MEGA | $49 / month | 1,000,000 / month |
+| PRO | $5 / month | 50,000 / month |
+| ULTRA | $15 / month | 250,000 / month |
+| MEGA | $29 / month | 1,000,000 / month |
 
 Paid plans are soft limits with per-request overage ($0.001 PRO / $0.0005 ULTRA / $0.0002 MEGA).
 

@@ -58,7 +58,7 @@ A runnable Python example (submit + poll) is in [`examples/stt_example.py`](../e
 | Plan | Price | Included requests |
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
-| PRO | $10 / month | 500 / month |
+| PRO | $9 / month | 500 / month |
 | ULTRA | $29 / month | 2,000 / month |
 | MEGA | $75 / month | 8,000 / month |
 

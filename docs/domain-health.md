@@ -64,9 +64,9 @@ curl "https://domain-health-api.p.rapidapi.com/check?domain=google.com" \
 | Plan | Price | Included requests |
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
-| PRO | $10 / month | 30,000 / month |
-| ULTRA | $25 / month | 100,000 / month |
-| MEGA | $49 / month | 300,000 / month |
+| PRO | $5 / month | 30,000 / month |
+| ULTRA | $15 / month | 100,000 / month |
+| MEGA | $29 / month | 300,000 / month |
 
 Paid plans are soft limits with per-request overage ($0.003 PRO / $0.002 ULTRA / $0.001 MEGA).
 

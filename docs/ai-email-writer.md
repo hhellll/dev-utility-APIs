@@ -99,9 +99,9 @@ curl -X POST "https://ai-email-writer-api.p.rapidapi.com/write" \
 | Plan | Price | Included requests |
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
-| PRO | $10 / month | 2,000 / month |
-| ULTRA | $25 / month | 10,000 / month |
-| MEGA | $49 / month | 40,000 / month |
+| PRO | $5 / month | 2,000 / month |
+| ULTRA | $15 / month | 10,000 / month |
+| MEGA | $29 / month | 40,000 / month |
 
 Paid plans are soft limits with per-request overage ($0.005 PRO / $0.003 ULTRA / $0.001 MEGA).
 

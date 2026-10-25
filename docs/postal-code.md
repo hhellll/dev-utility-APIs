@@ -64,9 +64,9 @@ curl "https://worldwide-postal-code-api.p.rapidapi.com/lookup?country=ID&code=10
 | Plan | Price | Included requests |
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
-| PRO | $9 / month | 25,000 / month |
-| ULTRA | $19 / month | 100,000 / month |
-| MEGA | $39 / month | 500,000 / month |
+| PRO | $5 / month | 25,000 / month |
+| ULTRA | $15 / month | 100,000 / month |
+| MEGA | $29 / month | 500,000 / month |
 
 Paid plans are soft limits with per-request overage ($0.001 PRO / $0.0005 ULTRA / $0.0002 MEGA).
 

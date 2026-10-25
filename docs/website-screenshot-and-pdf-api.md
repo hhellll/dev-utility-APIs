@@ -70,9 +70,9 @@ A runnable Python example is in [`examples/screenshot_example.py`](../examples/s
 | Plan | Price | Included requests |
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
-| PRO | $9 / month | 2,000 / month |
-| ULTRA | $29 / month | 15,000 / month |
-| MEGA | $79 / month | 50,000 / month |
+| PRO | $4 / month | 2,000 / month |
+| ULTRA | $19 / month | 15,000 / month |
+| MEGA | $49 / month | 50,000 / month |
 
 Subscribe and manage your plan here: **[Website Screenshot and PDF API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/website-screenshot-and-pdf-api)**
 

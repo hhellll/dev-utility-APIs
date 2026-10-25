@@ -132,9 +132,9 @@ curl "https://website-security-scanner-api.p.rapidapi.com/scan?url=https://examp
 | Plan | Price | Included requests |
 |---|---|---|
 | BASIC | Free | 2 / month (hard limit) |
-| PRO | $12 / month | 1,000 / month |
-| ULTRA | $29 / month | 5,000 / month |
-| MEGA | $59 / month | 20,000 / month |
+| PRO | $5 / month | 1,000 / month |
+| ULTRA | $15 / month | 5,000 / month |
+| MEGA | $29 / month | 20,000 / month |
 
 Paid plans are soft limits with per-request overage ($0.01 PRO / $0.006 ULTRA / $0.003 MEGA).
 
@@ -142,7 +142,7 @@ Subscribe and manage your plan here: **[Website Security Scanner API on RapidAPI
 
 ## Plans and what you get
 
-| | **BASIC — Free** | **PRO — $12/mo** | **ULTRA — $29/mo** | **MEGA — $59/mo** |
+| | **BASIC — Free** | **PRO — $5/mo** | **ULTRA — $15/mo** | **MEGA — $29/mo** |
 |---|---|---|---|---|
 | Passive scans / month | 2 (hard limit) | 1,000 (+$0.01/request overage) | 5,000 (+$0.006/request) | 20,000 (+$0.003/request) |
 | Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence & fix recommendations | Full report | Full report |
