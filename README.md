@@ -3,9 +3,9 @@
 # dev-utility-APIs
 ![APIs](https://img.shields.io/badge/APIs-19_production-blue) ![Live on RapidAPI](https://img.shields.io/badge/RapidAPI-18_live-0055ff) ![License](https://img.shields.io/badge/License-MIT-green)
 
-**19 production APIs on RapidAPI** by **hhelll** — website security scanning, AI email writing, public holidays & business days, VAT & IBAN validation, geocoding, domain health checks, phone validation, postal codes, email validation, NLP utilities, OCR & PDF tools, speech-to-text, text-to-speech, translation, IP geolocation, website screenshots & PDF, currency/crypto prices, background removal, and weather forecasts. Small, focused, self-hosted APIs — each one does one job well, with a free plan to try it out.
+**20 production APIs on RapidAPI** by **hhelll** — website security scanning, AI email writing, public holidays & business days, VAT & IBAN validation, geocoding, domain health checks, phone validation, postal codes, email validation, NLP utilities, OCR & PDF tools, speech-to-text, text-to-speech, translation, IP geolocation, website screenshots & PDF, currency/crypto prices, background removal, web page reading for AI agents, and weather forecasts. Small, focused, self-hosted APIs — each one does one job well, with a free plan to try it out.
 
-**18 APIs are live now.** The Weather API is built and running, and its listing is **launching soon**.
+**19 APIs are live now.** The Weather API is built and running, and its listing is **launching soon**.
 
 ## The API catalog
 
@@ -29,6 +29,7 @@
 | [Website Screenshot and PDF API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-screenshot-and-pdf-api) — [docs](docs/website-screenshot-and-pdf-api.md) | Website screenshots, URL → PDF, and Open Graph images | 5 requests/month | $9 / $29 / $79 |
 | [Currency and Crypto Prices API](https://rapidapi.com/Hitler-HlDevZDwP/api/currency-and-crypto-prices-api) — [docs](docs/currency-and-crypto-prices-api.md) | Cached fiat exchange rates and crypto spot prices | 5 requests/month | $9 / $25 / $69 |
 | [Background Remover AI](https://rapidapi.com/Hitler-HlDevZDwP/api/background-remover-ai5) | Remove image backgrounds → transparent PNG (plus replace-background, blur-background, and image conversion endpoints) | 5 requests/month | $5 / $15 / $49 |
+| [Web Reader API](https://rapidapi.com/Hitler-HlDevZDwP/api/web-reader-api4) — [docs](docs/web-reader-api.md) | Turn any web page into clean, LLM-ready markdown or plain text, with title, author, date and word count — built for AI agents and RAG pipelines | 100 requests/month | $1 single PRO plan (10,000 requests, then $0.001 each) |
 | Weather API - Global Forecast — [docs](docs/weather-api-global-forecast.md) | Current weather, 7-day forecast, and geocoding | *launching soon* | — |
 
 ## Get started (any API)
