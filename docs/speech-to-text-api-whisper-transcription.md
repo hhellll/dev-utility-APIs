@@ -58,9 +58,7 @@ A runnable Python example (submit + poll) is in [`examples/stt_example.py`](../e
 | Plan | Price | Included requests |
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
-| PRO | $9 / month | 500 / month |
-| ULTRA | $29 / month | 2,000 / month |
-| MEGA | $75 / month | 8,000 / month |
+| PRO | $5 / month | 500 / month |
 
 Subscribe and manage your plan here: **[Speech to Text API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/speech-to-text-api-whisper-transcription)**
 

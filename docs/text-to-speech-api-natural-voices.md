@@ -60,8 +60,6 @@ A runnable Python example is in [`examples/tts_example.py`](../examples/tts_exam
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
 | PRO | $5 / month | 500 / month |
-| ULTRA | $19 / month | 2,000 / month |
-| MEGA | $49 / month | 10,000 / month |
 
 Subscribe and manage your plan here: **[Text to Speech API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/text-to-speech-api-natural-voices)**
 

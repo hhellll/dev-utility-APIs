@@ -65,10 +65,8 @@ curl "https://domain-health-api.p.rapidapi.com/check?domain=google.com" \
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
 | PRO | $5 / month | 30,000 / month |
-| ULTRA | $15 / month | 100,000 / month |
-| MEGA | $29 / month | 300,000 / month |
 
-Paid plans are soft limits with per-request overage ($0.003 PRO / $0.002 ULTRA / $0.001 MEGA).
+The PRO plan is a soft limit with per-request overage of $0.003 per additional request.
 
 Subscribe and manage your plan here: **[Domain Health API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/domain-health-api)**
 

@@ -67,8 +67,6 @@ A runnable Python example is in [`examples/ipgeo_example.py`](../examples/ipgeo_
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
 | PRO | $1 / month | 50,000 / month |
-| ULTRA | $4 / month | 300,000 / month |
-| MEGA | $22 / month | 1,200,000 / month |
 
 Subscribe and manage your plan here: **[IP Geolocation API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/ip-geolocation-api25)**
 

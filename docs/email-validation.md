@@ -69,10 +69,8 @@ curl "https://email-validation-api44.p.rapidapi.com/validate?email=test@gmail.co
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
 | PRO | $5 / month | 5,000 / month |
-| ULTRA | $15 / month | 25,000 / month |
-| MEGA | $29 / month | 100,000 / month |
 
-Paid plans are soft limits with per-request overage ($0.003 PRO / $0.002 ULTRA / $0.001 MEGA).
+The PRO plan is a soft limit with per-request overage of $0.003 per additional request.
 
 Subscribe and manage your plan here: **[Email Validation API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/email-validation-api44)**
 

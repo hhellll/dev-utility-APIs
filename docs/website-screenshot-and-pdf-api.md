@@ -71,8 +71,6 @@ A runnable Python example is in [`examples/screenshot_example.py`](../examples/s
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
 | PRO | $4 / month | 2,000 / month |
-| ULTRA | $19 / month | 15,000 / month |
-| MEGA | $49 / month | 50,000 / month |
 
 Subscribe and manage your plan here: **[Website Screenshot and PDF API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/website-screenshot-and-pdf-api)**
 

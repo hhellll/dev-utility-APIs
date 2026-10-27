@@ -74,10 +74,8 @@ curl "https://holidays-and-business-days-api.p.rapidapi.com/holidays?country=ID&
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
 | PRO | $5 / month | 10,000 / month |
-| ULTRA | $15 / month | 50,000 / month |
-| MEGA | $29 / month | 250,000 / month |
 
-Paid plans are soft limits with per-request overage ($0.003 PRO / $0.002 ULTRA / $0.001 MEGA).
+The PRO plan is a soft limit with per-request overage of $0.003 per additional request.
 
 Subscribe and manage your plan here: **[Holidays and Business Days API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/holidays-and-business-days-api)**
 

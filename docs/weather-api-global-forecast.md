@@ -37,7 +37,5 @@ curl "https://<gateway-host>/weather?lat=-6.2&lon=106.8" \
 |---|---|---|
 | BASIC | Free | — (at launch) |
 | PRO | $10 / month | 10,000 / month |
-| ULTRA | $29 / month | 100,000 / month |
-| MEGA | $75 / month | 500,000 / month |
 
 Part of the [hhelll API family](../README.md#the-api-catalog).

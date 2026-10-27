@@ -79,8 +79,6 @@ A runnable Python example is in [`examples/ocr_example.py`](../examples/ocr_exam
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
 | PRO | $1 / month | 2,000 / month |
-| ULTRA | $3 / month | 10,000 / month |
-| MEGA | $9 / month | 40,000 / month |
 
 Subscribe and manage your plan here: **[OCR and PDF Tools API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/ocr-and-pdf-tools-api)**
 

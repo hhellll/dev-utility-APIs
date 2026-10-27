@@ -77,8 +77,6 @@ A runnable Python example is in [`examples/nlp_example.py`](../examples/nlp_exam
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
 | PRO | $5 / month | 10,000 / month |
-| ULTRA | $19 / month | 50,000 / month |
-| MEGA | $49 / month | 200,000 / month |
 
 Subscribe and manage your plan here: **[Text NLP Utilities API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/text-nlp-utilities-api)**
 

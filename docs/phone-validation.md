@@ -64,11 +64,9 @@ curl "https://phone-number-validation-api3.p.rapidapi.com/validate?number=%2B628
 | Plan | Price | Included requests |
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
-| PRO | $9 / month | 10,000 / month |
-| ULTRA | $19 / month | 50,000 / month |
-| MEGA | $49 / month | 100,000 / month |
+| PRO | $5 / month | 10,000 / month |
 
-Paid plans are soft limits with per-request overage ($0.003 PRO / $0.002 ULTRA / $0.001 MEGA).
+The PRO plan is a soft limit with per-request overage of $0.003 per additional request.
 
 Subscribe and manage your plan here: **[Phone Number Validation API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/phone-number-validation-api3)**
 

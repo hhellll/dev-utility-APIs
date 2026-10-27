@@ -64,10 +64,8 @@ curl "https://vat-and-iban-validation-api1.p.rapidapi.com/iban/validate?iban=DE8
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
 | PRO | $5 / month | 3,000 / month |
-| ULTRA | $15 / month | 10,000 / month |
-| MEGA | $29 / month | 40,000 / month |
 
-Paid plans are soft limits with per-request overage ($0.003 PRO / $0.002 ULTRA / $0.001 MEGA).
+The PRO plan is a soft limit with per-request overage of $0.003 per additional request.
 
 Subscribe and manage your plan here: **[VAT and IBAN Validation API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/vat-and-iban-validation-api1)**
 

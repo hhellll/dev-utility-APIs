@@ -59,8 +59,6 @@ A runnable Python example is in [`examples/prices_example.py`](../examples/price
 |---|---|---|
 | BASIC | Free | 5 / month (hard limit) |
 | PRO | $4 / month | 25,000 / month |
-| ULTRA | $9 / month | 150,000 / month |
-| MEGA | $15 / month | 600,000 / month |
 
 Subscribe and manage your plan here: **[Currency and Crypto Prices API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/currency-and-crypto-prices-api)**
 
