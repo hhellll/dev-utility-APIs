@@ -11,7 +11,7 @@
 
 | API | What it does | Free plan | Paid plan (PRO) |
 |---|---|---|---|
-| [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — [docs](docs/website-security-scanner.md) | Passive website security audit: HTTPS & TLS health, security headers, cookie flags, exposed files (.env, .git), live CVE intelligence for detected software (EPSS scores and CISA KEV exploitation status), mixed content — with a 0–100 score and grade | 2 requests/month | $5 |
+| [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — [docs](docs/website-security-scanner.md) | Passive website security audit: HTTPS & TLS health, security headers, cookie flags, DNS & email security checks, exposed files (.env, .git), subdomain surface, scan history with change diffs, live CVE intelligence for detected software (EPSS scores and CISA KEV exploitation status), mixed content — with a 0–100 score and grade | 2 requests/month | $5 |
 | [AI Email Writer API](https://rapidapi.com/Hitler-HlDevZDwP/api/ai-email-writer-api) — [docs](docs/ai-email-writer.md) | AI email generation: write new emails, draft replies, and subject-line ideas — with tone control, in English and Indonesian | 5 requests/month | $5 |
 | [Holidays and Business Days API](https://rapidapi.com/Hitler-HlDevZDwP/api/holidays-and-business-days-api) — [docs](docs/holidays.md) | Public holidays for 200+ countries, is-holiday / is-workday checks, and business-day counting | 5 requests/month | $5 |
 | [VAT and IBAN Validation API](https://rapidapi.com/Hitler-HlDevZDwP/api/vat-and-iban-validation-api1) — [docs](docs/vat-iban.md) | EU VAT validation via the official VIES service, EU VAT rates, and IBAN validation with bank/BIC lookup | 5 requests/month | $5 |
@@ -42,7 +42,7 @@
 
 ## Featured API: Website Security Scanner API
 
-Scan any public website's security posture in seconds — completely passively, with nothing installed on the target: HTTPS enforcement and TLS health, security headers, cookie flags, server information disclosure, exposed files such as `.env` and `.git`, mixed content, and outdated software matched against live CVE intelligence (EPSS exploit probability and CISA KEV active-exploitation data) — all rolled into one 0–100 score and a letter grade.
+Scan any public website's security posture in seconds — completely passively, with nothing installed on the target: HTTPS enforcement and TLS health, security headers, cookie flags, server information disclosure, exposed files such as `.env` and `.git`, mixed content, DNS and email authentication checks, Certificate Transparency subdomain surface, scan-to-scan change diffs, and outdated software matched against live CVE intelligence (EPSS exploit probability and CISA KEV active-exploitation data) — all rolled into one 0–100 score and a letter grade.
 
 **Live on RapidAPI → [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api)**
 
@@ -50,14 +50,14 @@ Scan any public website's security posture in seconds — completely passively, 
 
 ### What it does
 
-Give the API a URL and it runs a full passive audit: it follows the redirect chain, inspects the TLS certificate and protocol support, checks six security headers and cookie flags, fingerprints the technology stack and matches detected versions against live CVE data, enriched with EPSS scores and CISA KEV status, probes a short list of commonly exposed files, and looks for mixed content. Private and internal targets are refused (SSRF-protected) — it only scans public sites, and it never includes the contents of any exposed file, only that the path responded.
+Give the API a URL and it runs a full passive audit: it follows the redirect chain, inspects the TLS certificate and protocol support, checks six security headers and cookie flags, fingerprints the technology stack and matches detected versions against live CVE data, enriched with EPSS scores and CISA KEV status, probes a short list of commonly exposed files, and looks for mixed content. It also checks DNS and email authentication (SPF, DMARC, DKIM selectors, and CAA), looks for a published security.txt and HSTS preload status, maps the Certificate Transparency subdomain surface, and records each caller's scans so repeat scans can show what changed. Private and internal targets are refused (SSRF-protected) — it only scans public sites, and it never includes the contents of any exposed file, only that the path responded.
 
 | | |
 |---|---|
 | Input | A `url` — as a query parameter (GET) or JSON body (POST) |
 | Output | JSON — `score`, `grade`, summary counts by severity, and `findings` with per-check detail |
 | Latency | ~2–10 seconds per scan (a real google.com scan through the gateway took 2.6 s) |
-| Endpoints | `GET\|POST /scan`, `GET /headers`, `GET /ssl`, `GET /cve/search`, `GET /cve/{cve_id}`, `GET /health` |
+| Endpoints | `GET\|POST /scan`, `GET /headers`, `GET /ssl`, `GET /cve/search`, `GET /cve/{cve_id}`, `GET /scan/history`, `POST /scan/deep`, `POST /scan/deep/batch`, `GET /health` |
 
 ### Quick start
 
@@ -138,6 +138,15 @@ Looks up known vulnerabilities for a product and an optional exact version, matc
 
 Returns one CVE record: summary, CVSS score and vector, EPSS score and percentile, the CISA KEV entry when actively exploited, references, and the composite risk score.
 
+
+#### `GET /scan/history`
+
+Returns the calling user's previous scans for one host, newest first (max 20). Every `/scan` response also includes a `changes` object with the score delta, new and resolved findings, and certificate expiry days versus that caller's previous scan of the same host. History is keyed per user via the RapidAPI caller headers.
+
+| Parameter | Required | Notes |
+|---|---|---|
+| `host` | yes | The host to look up, e.g. `example.com` |
+
 #### `GET /health`
 
 Returns `{"status": "ok"}` when the service is up.
@@ -149,6 +158,10 @@ Starts an asynchronous **deep scan** — a Nuclei-powered active template scan o
 #### `GET /scan/deep/{job_id}`
 
 Returns the status and, once finished, the full result of a deep scan job. Only the API key that started the job can read it, and polling never consumes credits. **Plans:** the job owner's plan.
+
+#### `POST /scan/deep/batch`
+
+Queues deep scans for multiple hosts in one request. **Plans:** PRO — each host consumes one deep scan credit from the same pool as single deep scans (25/month, max 5/day); if the remaining quota covers only part of the batch, the rest are returned in `rejected[]` with a per-host reason. BASIC requests return `403`.
 
 ### Pricing
 

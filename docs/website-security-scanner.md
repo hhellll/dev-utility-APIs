@@ -1,6 +1,8 @@
 # Website Security Scanner API
 
-One call gives any public website a **passive security audit**: **HTTPS enforcement** and **TLS health** (certificate validity and expiry, negotiated protocol, legacy TLS 1.0/1.1 support), the six critical **security headers**, **cookie flags**, **server version disclosure**, detected **technology and versions** (WordPress, PHP, jQuery, server software) matched against **live CVE intelligence** — NVD and OSV records enriched with EPSS exploit-probability scores and CISA KEV active-exploitation status, publicly **exposed sensitive files** such as `/.env` and `/.git`, and **mixed content** — all rolled into a **0–100 score with an A–F grade** and structured findings with concrete recommendations.
+**Version:** 2.2.0
+
+One call gives any public website a **passive security audit**: **HTTPS enforcement** and **TLS health** (certificate validity and expiry, negotiated protocol, legacy TLS 1.0/1.1 support), the six critical **security headers**, **cookie flags**, **server version disclosure**, **DNS and email security** (SPF, DMARC, best-effort DKIM selectors, and CAA), **security.txt**, **HSTS preload status**, **TLS cipher detail**, a **Certificate Transparency subdomain surface**, detected **technology and versions** (WordPress, PHP, jQuery, server software) matched against **live CVE intelligence** — NVD and OSV records enriched with EPSS exploit-probability scores and CISA KEV active-exploitation status, publicly **exposed sensitive files** such as `/.env` and `/.git`, and **mixed content**, plus **scan history and change diffs** for repeat scans by the same caller — all rolled into a **0–100 score with an A–F grade** and structured findings with concrete recommendations.
 
 ![Website Security Scanner API](../assets/website-security-scanner.jpg)
 
@@ -26,6 +28,8 @@ The scan endpoints accept **GET** (query parameters) or **POST** (JSON body with
 
 The full audit: score, grade, severity summary, every individual check, and the findings list.
 
+**New in v2.2.0:** advanced passive checks now run for **all plans** (they were previously locked behind retired tiers). The PRO full report carries them under `checks`: `checks.dns_email`, `checks.security_txt`, `checks.hsts_preload`, TLS cipher detail inside `checks.tls`, and `checks.subdomains`. The compact BASIC report carries the same advanced results in summary form — `categories.dns_email`, `categories.security_txt`, an `advanced` block, and a compact `subdomains` block. Every `/scan` response also includes a `changes` object (see below).
+
 | Parameter | Required | Notes |
 |---|---|---|
 | `url` | yes | The website to scan — a domain or a full URL, e.g. `https://example.com` |
@@ -49,6 +53,18 @@ The full audit: score, grade, severity summary, every individual check, and the 
 ```
 
 Even google.com does not score 100 — it still accepts deprecated TLS protocols and sends no CSP header on its homepage. Sites with no HTTPS, exposed files, or end-of-life software score much lower and list every issue found.
+
+
+#### v2.2.0 response fields
+
+- `checks.dns_email` (PRO full report): `{domain, spf_present, dmarc_present, dmarc_policy, caa_present, dkim_selectors_checked, dkim_found}`. DKIM is best-effort: the common selectors `google`, `default`, `mail`, `selector1`, and `selector2` are checked. In the compact BASIC report the DNS/email results appear as `categories.dns_email` plus an `advanced` block: `{spf_present, dmarc_present, dmarc_policy, caa_present, dkim_found, security_txt_present, hsts_preload}`.
+- `checks.security_txt` (PRO): `{present, location}`. BASIC exposes `categories.security_txt` and `advanced.security_txt_present`.
+- `checks.hsts_preload` (PRO): `{status}`. BASIC exposes `advanced.hsts_preload`.
+- `checks.tls` (PRO): negotiated protocol and cipher detail. A weak negotiated cipher is a finding (-5).
+- `checks.subdomains` (PRO): `{domain, count, domains, truncated, source, note}` with `domains` capped at 50 and `source` set to `"crt.sh"`. BASIC returns the compact form `{count, domains, truncated}` with `domains` capped at 10. The Certificate Transparency lookup is cached for 1 hour and is fail-soft: if crt.sh is unavailable, the scan still completes without the subdomain section.
+- `changes` (all plans, on every `/scan`): `{first_scan, score_delta, new_findings, resolved_findings, cert_expiry_days}`, computed against the same caller's previous scan of the same host. History is keyed per user via the RapidAPI caller headers, so callers only ever see their own scan history.
+
+**Scoring for the new checks:** missing SPF -2; missing DMARC -5; DMARC policy `p=none` -2; missing security.txt -2 (low), while a published security.txt is an info finding ("security.txt published"); missing CAA -2 (low, "No CAA record found"); a found DKIM record is an info finding ("DKIM record found"); a domain on the HSTS preload list is an info finding ("Domain is on the HSTS preload list"); a weak negotiated cipher -5.
 
 ### `GET /headers?url=https://example.com`
 
@@ -81,6 +97,21 @@ Each result carries the CVE id, CVSS base score (when published), the EPSS explo
 
 Returns one CVE record: summary, CVSS base score and vector, publication date, EPSS score and percentile, the full CISA KEV entry when the CVE is being actively exploited (including known ransomware use and the required action), references, and the composite risk score. All plans receive the full record — the plans differ only in monthly quota.
 
+
+### `GET /scan/history?host=example.com`
+
+Returns the calling user's previous scans for one host, newest first, at most 20 entries. History is keyed per user via the RapidAPI caller headers.
+
+| Parameter | Required | Notes |
+|---|---|---|
+| `host` | yes | The host to look up, e.g. `example.com` |
+
+**Response:**
+
+```json
+{ "host": "example.com", "plan": "pro", "count": 2, "scans": [ { "scanned_at": "2026-10-27T09:00:00Z", "host": "example.com", "plan": "pro", "score": 76, "grade": "B" } ] }
+```
+
 ### `GET /health`
 
 Returns `{"status": "ok"}` when the service is up.
@@ -105,6 +136,11 @@ Then poll `GET /scan/deep/{job_id}` for the result. The credit is consumed when 
 
 Returns the status of a deep scan job — `queued`, `running`, or `done` with the full findings list. Only the API key that created the job can read it. Polling never consumes deep scan credits.
 
+
+### `POST /scan/deep/batch`
+
+Queues **deep scans for multiple hosts in one request**. This is a **PRO** feature (BASIC requests return `403`). Each host consumes **1 deep scan credit from the same pool as single deep scans** — 25 per month, max 5 per day. If the remaining quota covers only part of the batch, the covered hosts are accepted and the rest are returned in `rejected[]` with a per-host reason. Poll each accepted job with `GET /scan/deep/{job_id}`.
+
 **Error codes (deep scan endpoints):**
 
 | Code | Meaning |
@@ -123,10 +159,14 @@ Returns the status of a deep scan job — `queued`, `running`, or `done` with th
 - **Technology & versions** — WordPress, PHP, jQuery, and server software versions matched live against NVD and OSV vulnerability data, enriched with EPSS scores and CISA KEV exploitation status (see [CVE intelligence](#cve-intelligence)), on top of curated notes such as end-of-life PHP versions.
 - **Exposed files** — `/.env`, `/.git/HEAD`, `/.git/config`, `/.DS_Store`, `/phpinfo.php`, `/server-status`, `/.svn/entries`. Only the accessibility status is reported — file contents are never returned.
 - **Mixed content & listings** — HTTPS pages loading HTTP resources, and WordPress upload directory listing.
+- **DNS & email security** — SPF, DMARC (including its policy), CAA, and best-effort DKIM selector checks.
+- **security.txt & HSTS preload** — whether a security.txt file is published, and whether the domain is on the HSTS preload list.
+- **Subdomain surface** — subdomains discovered via Certificate Transparency (crt.sh), cached for 1 hour and fail-soft.
+- **Change tracking** — repeat scans by the same caller include a `changes` diff (score delta, new and resolved findings, certificate expiry days), and past scans are available via `GET /scan/history`.
 
 ## CVE intelligence
 
-Since version 2.1 the scanner does not rely on a hand-written list of known issues. Detected technologies and versions are matched against live vulnerability data, and two lookup endpoints expose the same data directly.
+Since version 2.1 the scanner does not rely on a hand-written list of known issues. Version 2.2.0 keeps the CVE endpoints unchanged and adds the advanced passive checks, subdomain surface, scan history, and change diffs described in this document. Detected technologies and versions are matched against live vulnerability data, and two lookup endpoints expose the same data directly.
 
 **Data sources**
 
@@ -170,8 +210,9 @@ Subscribe and manage your plan here: **[Website Security Scanner API on RapidAPI
 | Passive scans / month | 2 (hard limit) | 1,000 (+$0.01/request overage) |
 | Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence & fix recommendations |
 | CVE intelligence (live matching in scan reports, /cve/search, /cve/{cve_id}) | Full records | Full records |
-| Deep scan credits / month (Nuclei-powered active template scan) | — | 25 (max 5/day) |
-| Scan result history | — | 7 days |
+| Deep scan credits / month (Nuclei-powered active template scan, single and batch share this pool) | — | 25 (max 5/day) |
+| Scan history & change diffs (`changes` on every `/scan`, `GET /scan/history`) | Included, keyed to the calling user | Included, keyed to the calling user |
+| Batch deep scans (`POST /scan/deep/batch`) | — (403) | Available; partial acceptance with `rejected[]` when the deep scan quota is short |
 
 **Deep scan rules:** 1 credit = 1 host scanned. A scan that has been executed consumes its credit even if the target turns out to be unreachable or blocks the scanner — the work was performed. Invalid URLs and private/internal targets are rejected *before* execution and never consume a credit. Checking a job's status or fetching its result never consumes credits.
 
