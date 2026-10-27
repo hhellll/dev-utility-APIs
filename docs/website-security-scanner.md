@@ -75,11 +75,11 @@ Looks up known vulnerabilities for a product and (optionally) an exact version, 
 | `product` | yes | One of: apache_http_server, nginx, wordpress, php, jquery, log4j, openssl, bootstrap, iis, litespeed (common aliases such as apache, httpd, wp and log4j2 are accepted) |
 | `version` | no | Exact product version. With a version, results are confirmed matches for that version. Without one, only CISA KEV records for the product family are returned and every result is labelled as a potential finding |
 
-Each result carries the CVE id, CVSS base score (when published), the EPSS exploit-probability score and percentile, a CISA KEV flag (actively exploited, with the date it was added), and a composite risk score (see [CVE intelligence](#cve-intelligence)). BASIC returns the match count and the top 5 results with risk summaries; PRO and above return the full list.
+Each result carries the CVE id, CVSS base score (when published), the EPSS exploit-probability score and percentile, a CISA KEV flag (actively exploited, with the date it was added), and a composite risk score (see [CVE intelligence](#cve-intelligence)). All plans return the full result list with scores and detail — the plans differ only in monthly quota.
 
 ### `GET /cve/{cve_id}`
 
-Returns one CVE record: summary, CVSS base score and vector, publication date, EPSS score and percentile, the full CISA KEV entry when the CVE is being actively exploited (including known ransomware use and the required action), references, and the composite risk score. BASIC returns the risk summary only.
+Returns one CVE record: summary, CVSS base score and vector, publication date, EPSS score and percentile, the full CISA KEV entry when the CVE is being actively exploited (including known ransomware use and the required action), references, and the composite risk score. All plans receive the full record — the plans differ only in monthly quota.
 
 ### `GET /health`
 
@@ -87,7 +87,7 @@ Returns `{"status": "ok"}` when the service is up.
 
 ### `POST /scan/deep`
 
-Starts an asynchronous **deep scan** — a Nuclei-powered active template scan of one host (exposures, misconfigurations, known-CVE templates) — and queues it for execution. Available on **PRO, ULTRA and MEGA**; each executed scan consumes **1 deep scan credit** (see [Plans and what you get](#plans-and-what-you-get)).
+Starts an asynchronous **deep scan** — a Nuclei-powered active template scan of one host (exposures, misconfigurations, known-CVE templates) — and queues it for execution. Available on the **PRO** plan; each executed scan consumes **1 deep scan credit** (see [Plans and what you get](#plans-and-what-you-get)).
 
 | Parameter | Required | Notes |
 |---|---|---|
@@ -104,16 +104,6 @@ Then poll `GET /scan/deep/{job_id}` for the result. The credit is consumed when 
 ### `GET /scan/deep/{job_id}`
 
 Returns the status of a deep scan job — `queued`, `running`, or `done` with the full findings list. Only the API key that created the job can read it. Polling never consumes deep scan credits.
-
-### `POST /scan/deep/batch`
-
-Starts one deep scan job per URL — up to **20 URLs** in a single call, one credit per host. **MEGA plan only.**
-
-| Parameter | Required | Notes |
-|---|---|---|
-| `urls` | yes | JSON array of up to 20 URLs |
-
-**Response `202 Accepted`:** a list of `{ "url": ..., "job_id": ... }` entries, one per accepted host.
 
 **Error codes (deep scan endpoints):**
 
@@ -168,27 +158,20 @@ curl "https://website-security-scanner-api.p.rapidapi.com/scan?url=https://examp
 |---|---|---|
 | BASIC | Free | 2 / month (hard limit) |
 | PRO | $5 / month | 1,000 / month |
-| ULTRA | $15 / month | 5,000 / month |
-| MEGA | $29 / month | 20,000 / month |
 
-Paid plans are soft limits with per-request overage ($0.01 PRO / $0.006 ULTRA / $0.003 MEGA).
+The PRO plan is a soft limit with per-request overage of $0.01 per additional request.
 
 Subscribe and manage your plan here: **[Website Security Scanner API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api)**
 
 ## Plans and what you get
 
-| | **BASIC — Free** | **PRO — $5/mo** | **ULTRA — $15/mo** | **MEGA — $29/mo** |
-|---|---|---|---|---|
-| Passive scans / month | 2 (hard limit) | 1,000 (+$0.01/request overage) | 5,000 (+$0.006/request) | 20,000 (+$0.003/request) |
-| Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence & fix recommendations | Full report | Full report |
-| CVE intelligence (live matching in scan reports, /cve/search, /cve/{cve_id}) | Risk summary only | Full records | Full records | Full records |
-| Advanced checks (SPF/DMARC, security.txt, HSTS preload, TLS cipher details, extended tech fingerprinting) | — | — | ✓ | ✓ |
-| Deep scan credits / month (Nuclei-powered active template scan) | — | 25 (max 5/day) | 100 (max 15/day) | 300 (max 30/day) |
-| Passive subdomain enumeration (deep scan) | — | — | ✓ | ✓ |
-| Light port check (deep scan) | — | — | — | ✓ |
-| Batch deep scan submit | — | — | — | ✓ |
-| Queue priority | — | Standard | Priority | Highest |
-| Scan result history | — | 7 days | 30 days | 90 days |
+| | **BASIC — Free** | **PRO — $5/mo** |
+|---|---|---|
+| Passive scans / month | 2 (hard limit) | 1,000 (+$0.01/request overage) |
+| Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence & fix recommendations |
+| CVE intelligence (live matching in scan reports, /cve/search, /cve/{cve_id}) | Full records | Full records |
+| Deep scan credits / month (Nuclei-powered active template scan) | — | 25 (max 5/day) |
+| Scan result history | — | 7 days |
 
 **Deep scan rules:** 1 credit = 1 host scanned. A scan that has been executed consumes its credit even if the target turns out to be unreachable or blocks the scanner — the work was performed. Invalid URLs and private/internal targets are rejected *before* execution and never consume a credit. Checking a job's status or fetching its result never consumes credits.
 

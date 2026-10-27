@@ -11,7 +11,7 @@
 
 | API | What it does | Free plan | Paid plans (PRO / ULTRA / MEGA) |
 |---|---|---|---|
-| [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — [docs](docs/website-security-scanner.md) | Passive website security audit: HTTPS & TLS health, security headers, cookie flags, exposed files (.env, .git), live CVE intelligence for detected software (EPSS scores and CISA KEV exploitation status), mixed content — with a 0–100 score and grade | 2 requests/month | $5 / $15 / $29 |
+| [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — [docs](docs/website-security-scanner.md) | Passive website security audit: HTTPS & TLS health, security headers, cookie flags, exposed files (.env, .git), live CVE intelligence for detected software (EPSS scores and CISA KEV exploitation status), mixed content — with a 0–100 score and grade | 2 requests/month | $5 |
 | [AI Email Writer API](https://rapidapi.com/Hitler-HlDevZDwP/api/ai-email-writer-api) — [docs](docs/ai-email-writer.md) | AI email generation: write new emails, draft replies, and subject-line ideas — with tone control, in English and Indonesian | 5 requests/month | $5 / $15 / $29 |
 | [Holidays and Business Days API](https://rapidapi.com/Hitler-HlDevZDwP/api/holidays-and-business-days-api) — [docs](docs/holidays.md) | Public holidays for 200+ countries, is-holiday / is-workday checks, and business-day counting | 5 requests/month | $5 / $15 / $29 |
 | [VAT and IBAN Validation API](https://rapidapi.com/Hitler-HlDevZDwP/api/vat-and-iban-validation-api1) — [docs](docs/vat-iban.md) | EU VAT validation via the official VIES service, EU VAT rates, and IBAN validation with bank/BIC lookup | 5 requests/month | $5 / $15 / $29 |
@@ -144,15 +144,11 @@ Returns `{"status": "ok"}` when the service is up.
 
 #### `POST /scan/deep`
 
-Starts an asynchronous **deep scan** — a Nuclei-powered active template scan of one host — and returns `202` with a `job_id` to poll for the result. **Plans:** PRO, ULTRA and MEGA (consumes deep scan credits).
+Starts an asynchronous **deep scan** — a Nuclei-powered active template scan of one host — and returns `202` with a `job_id` to poll for the result. **Plans:** PRO (consumes deep scan credits).
 
 #### `GET /scan/deep/{job_id}`
 
 Returns the status and, once finished, the full result of a deep scan job. Only the API key that started the job can read it, and polling never consumes credits. **Plans:** the job owner's plan.
-
-#### `POST /scan/deep/batch`
-
-Starts deep scans for up to 20 URLs in one call, one credit per host. **Plans:** MEGA only.
 
 ### Pricing
 
@@ -160,22 +156,15 @@ Starts deep scans for up to 20 URLs in one call, one credit per host. **Plans:**
 |---|---|---|---|
 | BASIC | Free | 2 / month (hard limit) | — |
 | PRO | $5 / month | 1,000 / month | $0.01 / request |
-| ULTRA | $15 / month | 5,000 / month | $0.006 / request |
-| MEGA | $29 / month | 20,000 / month | $0.003 / request |
 
 #### What each plan gets
 
-| | BASIC — Free | PRO — $5/mo | ULTRA — $15/mo | MEGA — $29/mo |
-|---|---|---|---|---|
-| Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence & fix recommendations | Full report | Full report |
-| CVE intelligence lookups (/cve/search, /cve/{cve_id}) | Risk summary only | Full records | Full records | Full records |
-| Advanced checks (SPF/DMARC, security.txt, HSTS preload, TLS cipher details, extended tech fingerprinting) | — | — | ✓ | ✓ |
-| Deep scan credits / month (Nuclei-powered active template scan) | — | 25 (max 5/day) | 100 (max 15/day) | 300 (max 30/day) |
-| Passive subdomain enumeration (deep scan) | — | — | ✓ | ✓ |
-| Light port check (deep scan) | — | — | — | ✓ |
-| Batch deep scan submit | — | — | — | ✓ |
-| Queue priority | — | Standard | Priority | Highest |
-| Scan result history | — | 7 days | 30 days | 90 days |
+| | BASIC — Free | PRO — $5/mo |
+|---|---|---|
+| Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence & fix recommendations |
+| CVE intelligence lookups (/cve/search, /cve/{cve_id}) | Full records | Full records |
+| Deep scan credits / month (Nuclei-powered active template scan) | — | 25 (max 5/day) |
+| Scan result history | — | 7 days |
 
 **Deep scan rules:** 1 credit = 1 host scanned. A scan that has been executed consumes its credit even if the target turns out to be unreachable or blocks the scanner — the work was performed. Invalid URLs and private/internal targets are rejected *before* execution and never consume a credit. Checking a job's status or fetching its result never consumes credits.
 
