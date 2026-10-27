@@ -34,25 +34,28 @@ The full audit: score, grade, severity summary, every individual check, and the 
 |---|---|---|
 | `url` | yes | The website to scan — a domain or a full URL, e.g. `https://example.com` |
 
-**Response:** JSON like (real output for `https://google.com`, response time ~2.6 s; findings excerpted):
+**Response:** JSON like (real output for `https://www.spacex.com`, response time ~3.2 s; findings excerpted):
 
 ```json
 {
-  "url": "https://google.com",
-  "score": 76,
-  "grade": "B",
-  "summary": { "critical": 0, "high": 0, "medium": 2, "low": 3, "info": 0 },
+  "url": "https://www.spacex.com",
+  "score": 67,
+  "grade": "C",
+  "summary": { "critical": 0, "high": 1, "medium": 2, "low": 3, "info": 2 },
   "findings": [
+    { "severity": "high", "title": "Sensitive file exposed: /server-status" },
     { "severity": "medium", "title": "Deprecated TLS protocols enabled" },
-    { "severity": "medium", "title": "Missing Content-Security-Policy header" },
+    { "severity": "medium", "title": "HTTP traffic is not redirected to HTTPS" },
     { "severity": "low", "title": "Missing X-Content-Type-Options header" },
     { "severity": "low", "title": "Missing Referrer-Policy header" },
-    { "severity": "low", "title": "Cookies set without the HttpOnly flag" }
+    { "severity": "low", "title": "Missing Permissions-Policy header" },
+    { "severity": "info", "title": "security.txt published" },
+    { "severity": "info", "title": "DKIM record found" }
   ]
 }
 ```
 
-Even google.com does not score 100 — it still accepts deprecated TLS protocols and sends no CSP header on its homepage. Sites with no HTTPS, exposed files, or end-of-life software score much lower and list every issue found.
+Even spacex.com does not score 100 — a scan of www.spacex.com turned up an exposed /server-status file (a high-severity finding), deprecated TLS protocols still enabled, and HTTP traffic on the www host that is not redirected to HTTPS. Sites with no HTTPS, exposed files, or end-of-life software score much lower and list every issue found.
 
 
 #### v2.2.0 response fields

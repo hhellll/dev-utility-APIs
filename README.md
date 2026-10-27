@@ -56,7 +56,7 @@ Give the API a URL and it runs a full passive audit: it follows the redirect cha
 |---|---|
 | Input | A `url` — as a query parameter (GET) or JSON body (POST) |
 | Output | JSON — `score`, `grade`, summary counts by severity, and `findings` with per-check detail |
-| Latency | ~2–10 seconds per scan (a real google.com scan through the gateway took 2.6 s) |
+| Latency | ~2–10 seconds per scan (a real www.spacex.com scan through the gateway took 3.2 s) |
 | Endpoints | `GET\|POST /scan`, `GET /headers`, `GET /ssl`, `GET /cve/search`, `GET /cve/{cve_id}`, `GET /scan/history`, `POST /scan/deep`, `POST /scan/deep/batch`, `GET /health` |
 
 ### Quick start
@@ -83,16 +83,19 @@ curl -X POST "https://website-security-scanner-api.p.rapidapi.com/scan" \
 
 ```json
 {
-  "url": "https://google.com",
-  "score": 76,
-  "grade": "B",
-  "summary": { "critical": 0, "high": 0, "medium": 2, "low": 3, "info": 0 },
+  "url": "https://www.spacex.com",
+  "score": 67,
+  "grade": "C",
+  "summary": { "critical": 0, "high": 1, "medium": 2, "low": 3, "info": 2 },
   "findings": [
+    { "severity": "high", "title": "Sensitive file exposed: /server-status" },
     { "severity": "medium", "title": "Deprecated TLS protocols enabled" },
-    { "severity": "medium", "title": "Missing Content-Security-Policy header" },
+    { "severity": "medium", "title": "HTTP traffic is not redirected to HTTPS" },
     { "severity": "low", "title": "Missing X-Content-Type-Options header" },
     { "severity": "low", "title": "Missing Referrer-Policy header" },
-    { "severity": "low", "title": "Cookies set without the HttpOnly flag" }
+    { "severity": "low", "title": "Missing Permissions-Policy header" },
+    { "severity": "info", "title": "security.txt published" },
+    { "severity": "info", "title": "DKIM record found" }
   ]
 }
 ```
