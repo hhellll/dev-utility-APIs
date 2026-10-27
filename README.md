@@ -177,7 +177,7 @@ Queues deep scans for multiple hosts in one request. **Plans:** PRO — each hos
 | Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence & fix recommendations |
 | CVE intelligence lookups (/cve/search, /cve/{cve_id}) | Full records | Full records |
 | Deep scan credits / month (Nuclei-powered active template scan) | — | 25 (max 5/day) |
-| Scan result history | — | 7 days |
+| Scan result history & change diffs | Yes | Yes |
 
 **Deep scan rules:** 1 credit = 1 host scanned. A scan that has been executed consumes its credit even if the target turns out to be unreachable or blocks the scanner — the work was performed. Invalid URLs and private/internal targets are rejected *before* execution and never consume a credit. Checking a job's status or fetching its result never consumes credits.
 
