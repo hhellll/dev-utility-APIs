@@ -11,7 +11,7 @@
 
 | API | What it does | Free plan | Paid plans (PRO / ULTRA / MEGA) |
 |---|---|---|---|
-| [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — [docs](docs/website-security-scanner.md) | Passive website security audit: HTTPS & TLS health, security headers, cookie flags, exposed files (.env, .git), outdated software with known CVEs, mixed content — with a 0–100 score and grade | 2 requests/month | $5 / $15 / $29 |
+| [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — [docs](docs/website-security-scanner.md) | Passive website security audit: HTTPS & TLS health, security headers, cookie flags, exposed files (.env, .git), live CVE intelligence for detected software (EPSS scores and CISA KEV exploitation status), mixed content — with a 0–100 score and grade | 2 requests/month | $5 / $15 / $29 |
 | [AI Email Writer API](https://rapidapi.com/Hitler-HlDevZDwP/api/ai-email-writer-api) — [docs](docs/ai-email-writer.md) | AI email generation: write new emails, draft replies, and subject-line ideas — with tone control, in English and Indonesian | 5 requests/month | $5 / $15 / $29 |
 | [Holidays and Business Days API](https://rapidapi.com/Hitler-HlDevZDwP/api/holidays-and-business-days-api) — [docs](docs/holidays.md) | Public holidays for 200+ countries, is-holiday / is-workday checks, and business-day counting | 5 requests/month | $5 / $15 / $29 |
 | [VAT and IBAN Validation API](https://rapidapi.com/Hitler-HlDevZDwP/api/vat-and-iban-validation-api1) — [docs](docs/vat-iban.md) | EU VAT validation via the official VIES service, EU VAT rates, and IBAN validation with bank/BIC lookup | 5 requests/month | $5 / $15 / $29 |
@@ -42,7 +42,7 @@
 
 ## Featured API: Website Security Scanner API
 
-Scan any public website's security posture in seconds — completely passively, with nothing installed on the target: HTTPS enforcement and TLS health, security headers, cookie flags, server information disclosure, exposed files such as `.env` and `.git`, mixed content, and outdated software with known vulnerabilities — all rolled into one 0–100 score and a letter grade.
+Scan any public website's security posture in seconds — completely passively, with nothing installed on the target: HTTPS enforcement and TLS health, security headers, cookie flags, server information disclosure, exposed files such as `.env` and `.git`, mixed content, and outdated software matched against live CVE intelligence (EPSS exploit probability and CISA KEV active-exploitation data) — all rolled into one 0–100 score and a letter grade.
 
 **Live on RapidAPI → [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api)**
 
@@ -50,14 +50,14 @@ Scan any public website's security posture in seconds — completely passively, 
 
 ### What it does
 
-Give the API a URL and it runs a full passive audit: it follows the redirect chain, inspects the TLS certificate and protocol support, checks six security headers and cookie flags, fingerprints the technology stack and flags versions with curated known CVEs, probes a short list of commonly exposed files, and looks for mixed content. Private and internal targets are refused (SSRF-protected) — it only scans public sites, and it never includes the contents of any exposed file, only that the path responded.
+Give the API a URL and it runs a full passive audit: it follows the redirect chain, inspects the TLS certificate and protocol support, checks six security headers and cookie flags, fingerprints the technology stack and matches detected versions against live CVE data, enriched with EPSS scores and CISA KEV status, probes a short list of commonly exposed files, and looks for mixed content. Private and internal targets are refused (SSRF-protected) — it only scans public sites, and it never includes the contents of any exposed file, only that the path responded.
 
 | | |
 |---|---|
 | Input | A `url` — as a query parameter (GET) or JSON body (POST) |
 | Output | JSON — `score`, `grade`, summary counts by severity, and `findings` with per-check detail |
 | Latency | ~2–10 seconds per scan (a real google.com scan through the gateway took 2.6 s) |
-| Endpoints | `GET\|POST /scan`, `GET /headers`, `GET /ssl`, `GET /health` |
+| Endpoints | `GET\|POST /scan`, `GET /headers`, `GET /ssl`, `GET /cve/search`, `GET /cve/{cve_id}`, `GET /health` |
 
 ### Quick start
 
@@ -125,6 +125,19 @@ Just the TLS part: certificate issuer and subject, validity window, days remaini
 |---|---|---|
 | `url` | yes | The website to check |
 
+#### `GET /cve/search`
+
+Looks up known vulnerabilities for a product and an optional exact version, matched live against NVD and OSV data and enriched with EPSS scores and CISA KEV exploitation status. Supported products include WordPress, Apache HTTP Server, nginx, PHP, jQuery, Log4j, OpenSSL, Bootstrap, IIS and LiteSpeed. Results are labelled `exact_version` (confirmed for that version) or `product_only` (potential, version not confirmed) and carry a 0–100 composite risk score.
+
+| Parameter | Required | Notes |
+|---|---|---|
+| `product` | yes | Product name or alias, e.g. `wordpress`, `apache`, `log4j` |
+| `version` | no | Exact version for confirmed matching |
+
+#### `GET /cve/{cve_id}`
+
+Returns one CVE record: summary, CVSS score and vector, EPSS score and percentile, the CISA KEV entry when actively exploited, references, and the composite risk score.
+
 #### `GET /health`
 
 Returns `{"status": "ok"}` when the service is up.
@@ -155,6 +168,7 @@ Starts deep scans for up to 20 URLs in one call, one credit per host. **Plans:**
 | | BASIC — Free | PRO — $5/mo | ULTRA — $15/mo | MEGA — $29/mo |
 |---|---|---|---|---|
 | Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence & fix recommendations | Full report | Full report |
+| CVE intelligence lookups (/cve/search, /cve/{cve_id}) | Risk summary only | Full records | Full records | Full records |
 | Advanced checks (SPF/DMARC, security.txt, HSTS preload, TLS cipher details, extended tech fingerprinting) | — | — | ✓ | ✓ |
 | Deep scan credits / month (Nuclei-powered active template scan) | — | 25 (max 5/day) | 100 (max 15/day) | 300 (max 30/day) |
 | Passive subdomain enumeration (deep scan) | — | — | ✓ | ✓ |

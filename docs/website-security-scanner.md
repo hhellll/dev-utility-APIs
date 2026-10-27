@@ -1,6 +1,6 @@
 # Website Security Scanner API
 
-One call gives any public website a **passive security audit**: **HTTPS enforcement** and **TLS health** (certificate validity and expiry, negotiated protocol, legacy TLS 1.0/1.1 support), the six critical **security headers**, **cookie flags**, **server version disclosure**, detected **technology and versions** (WordPress, PHP, jQuery) matched against a curated list of **known issues and CVEs**, publicly **exposed sensitive files** such as `/.env` and `/.git`, and **mixed content** — all rolled into a **0–100 score with an A–F grade** and structured findings with concrete recommendations.
+One call gives any public website a **passive security audit**: **HTTPS enforcement** and **TLS health** (certificate validity and expiry, negotiated protocol, legacy TLS 1.0/1.1 support), the six critical **security headers**, **cookie flags**, **server version disclosure**, detected **technology and versions** (WordPress, PHP, jQuery, server software) matched against **live CVE intelligence** — NVD and OSV records enriched with EPSS exploit-probability scores and CISA KEV active-exploitation status, publicly **exposed sensitive files** such as `/.env` and `/.git`, and **mixed content** — all rolled into a **0–100 score with an A–F grade** and structured findings with concrete recommendations.
 
 ![Website Security Scanner API](../assets/website-security-scanner.jpg)
 
@@ -66,6 +66,21 @@ Just the TLS part: certificate issuer and subject, validity window, days remaini
 |---|---|---|
 | `url` | yes | The website to check |
 
+### `GET /cve/search?product=wordpress&version=5.7.2`
+
+Looks up known vulnerabilities for a product and (optionally) an exact version, matched live against NVD and OSV data and enriched with EPSS scores and CISA KEV exploitation status.
+
+| Parameter | Required | Notes |
+|---|---|---|
+| `product` | yes | One of: apache_http_server, nginx, wordpress, php, jquery, log4j, openssl, bootstrap, iis, litespeed (common aliases such as apache, httpd, wp and log4j2 are accepted) |
+| `version` | no | Exact product version. With a version, results are confirmed matches for that version. Without one, only CISA KEV records for the product family are returned and every result is labelled as a potential finding |
+
+Each result carries the CVE id, CVSS base score (when published), the EPSS exploit-probability score and percentile, a CISA KEV flag (actively exploited, with the date it was added), and a composite risk score (see [CVE intelligence](#cve-intelligence)). BASIC returns the match count and the top 5 results with risk summaries; PRO and above return the full list.
+
+### `GET /cve/{cve_id}`
+
+Returns one CVE record: summary, CVSS base score and vector, publication date, EPSS score and percentile, the full CISA KEV entry when the CVE is being actively exploited (including known ransomware use and the required action), references, and the composite risk score. BASIC returns the risk summary only.
+
 ### `GET /health`
 
 Returns `{"status": "ok"}` when the service is up.
@@ -115,9 +130,29 @@ Starts one deep scan job per URL — up to **20 URLs** in a single call, one cre
 - **Security headers** — Content-Security-Policy, Strict-Transport-Security, X-Content-Type-Options, frame protection, Referrer-Policy, Permissions-Policy.
 - **Cookies** — Secure, HttpOnly, and SameSite flags on every `Set-Cookie`.
 - **Disclosure** — version numbers leaked in `Server` / `X-Powered-By` headers.
-- **Technology & versions** — WordPress, PHP, and jQuery versions matched against a curated list of known issues (for example jQuery CVE-2015-9251, CVE-2020-11022 and CVE-2020-11023, and end-of-life PHP versions).
+- **Technology & versions** — WordPress, PHP, jQuery, and server software versions matched live against NVD and OSV vulnerability data, enriched with EPSS scores and CISA KEV exploitation status (see [CVE intelligence](#cve-intelligence)), on top of curated notes such as end-of-life PHP versions.
 - **Exposed files** — `/.env`, `/.git/HEAD`, `/.git/config`, `/.DS_Store`, `/phpinfo.php`, `/server-status`, `/.svn/entries`. Only the accessibility status is reported — file contents are never returned.
 - **Mixed content & listings** — HTTPS pages loading HTTP resources, and WordPress upload directory listing.
+
+## CVE intelligence
+
+Since version 2.1 the scanner does not rely on a hand-written list of known issues. Detected technologies and versions are matched against live vulnerability data, and two lookup endpoints expose the same data directly.
+
+**Data sources**
+
+- **NVD** (National Vulnerability Database) and **OSV** (osv.dev) — the vulnerability records themselves, matched by exact product and version (NVD CPE matching for server and CMS software, OSV for library ecosystems such as Maven and npm).
+- **EPSS** (FIRST.org) — a daily probability score (0 to 1) that a CVE will be exploited in the wild, mirrored locally and refreshed every day.
+- **CISA KEV** (Known Exploited Vulnerabilities catalog) — the set of CVEs confirmed to be actively exploited, mirrored locally and refreshed every day, including known ransomware use.
+
+**Confidence labels.** A match made with an exact detected version is `exact_version`: the CVE genuinely applies to that version, it appears in the findings, and it lowers the scan score by risk tier (all CVE-related deductions combined are capped). When a product is detected but its version cannot be confirmed, matches are `product_only`: they are listed as potential findings for the product family, are clearly labelled, and never lower the score.
+
+**Composite risk score (secscan-risk-v1).** Every CVE gets one 0 to 100 score:
+
+```
+base = 0.6 x (CVSS base score x 10) + 0.4 x (EPSS x 100)
+```
+
+When only one of CVSS or EPSS is published, the base is that component alone. A CVE listed in CISA KEV is floored at 85, and at 90 when CISA records known ransomware use. Bands: 90+ critical, 70+ high, 40+ medium, above 0 low.
 
 ## Example (cURL)
 
@@ -146,6 +181,7 @@ Subscribe and manage your plan here: **[Website Security Scanner API on RapidAPI
 |---|---|---|---|---|
 | Passive scans / month | 2 (hard limit) | 1,000 (+$0.01/request overage) | 5,000 (+$0.006/request) | 20,000 (+$0.003/request) |
 | Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence & fix recommendations | Full report | Full report |
+| CVE intelligence (live matching in scan reports, /cve/search, /cve/{cve_id}) | Risk summary only | Full records | Full records | Full records |
 | Advanced checks (SPF/DMARC, security.txt, HSTS preload, TLS cipher details, extended tech fingerprinting) | — | — | ✓ | ✓ |
 | Deep scan credits / month (Nuclei-powered active template scan) | — | 25 (max 5/day) | 100 (max 15/day) | 300 (max 30/day) |
 | Passive subdomain enumeration (deep scan) | — | — | ✓ | ✓ |
