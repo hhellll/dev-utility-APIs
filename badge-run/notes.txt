@@ -1,2 +1,0 @@
-Standing notes for the API suite.
-This file was added and removed by two small housekeeping pull requests on 2026-10-28.
