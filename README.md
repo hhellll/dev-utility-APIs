@@ -46,6 +46,8 @@ Scan any public website's security posture in seconds — completely passively, 
 
 **Live on RapidAPI → [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api)**
 
+**Try it free, no signup -> [Live demo](https://149-118-58-54.sslip.io/secscan-demo/)** — the summary view (score, grade, per-category pass/fail, subdomain count), the same shape the free BASIC plan returns.
+
 ![Website Security Scanner API](assets/website-security-scanner.jpg)
 
 ### What it does
