@@ -130,6 +130,8 @@ Starts an asynchronous **deep scan** — a Nuclei-powered active template scan o
 | Parameter | Required | Notes |
 |---|---|---|
 | `url` | yes | The website to scan — one host per job |
+| `auth_cookie` | no | Cookie header value for authenticated DAST (e.g. a session cookie). Only sent to the job's own host, only during the DAST stage, and wiped when the job finishes |
+| `auth_headers` | no | JSON object of extra headers for authenticated DAST, same handling as `auth_cookie` |
 
 **Response `202 Accepted`:**
 
@@ -192,7 +194,39 @@ status.
 
 Deep scan results carry a `tls_deep` block on every job. A `dast`
 block appears when DAST ran (crawled endpoints, findings, summary);
-for unverified domains it contains a `skipped` note instead.
+for unverified domains it contains a `skipped` note instead. DAST
+findings carry a `confidence` label (`confirmed`, `likely`,
+`reported`, `unverified`): where a verification strategy exists, the
+finding is replayed and compared against a benign control request
+before the label is assigned, and `verification` explains the basis.
+
+### `POST /scan/monitor`
+
+Registers a domain for **recurring passive monitoring** (PRO only).
+The scanner re-checks the domain on the chosen interval and stores
+the score, grade and a change diff for every run.
+
+| Parameter | Required | Notes |
+|---|---|---|
+| `domain` | yes | The domain to monitor (a full URL works too) |
+| `interval_hours` | no | Re-check interval, 1-168 hours (default 24) |
+
+### `GET /scan/monitor` and `GET /scan/monitor/{monitor_id}`
+
+List your monitors / fetch one monitor, including `last_score`,
+`last_grade`, `last_run_at` and `last_changes` — the latest run's diff
+(`score_delta`, `new_findings`, `resolved_findings`,
+`cert_expiry_days`).
+
+### `DELETE /scan/monitor/{monitor_id}`
+
+Stops a monitor (it stays listed with `active: false`).
+
+Every passive scan also includes `checks.malware_reputation`: a
+*lite* reputation verdict (`listed`, `suspicious` or `clean`) from the
+Spamhaus DBL and SURBL domain blocklists plus URL heuristics. A
+blocklist listing adds a high-severity finding. It is a reputation
+check, not a full malware scan.
 
 ## What gets checked
 

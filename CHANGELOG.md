@@ -22,6 +22,24 @@ dev-utility APIs. The format follows Keep a Changelog; versions match the
   token to place at `/.well-known/hhelll-verify.txt` or in a DNS TXT
   record; `POST /scan/verify/confirm` checks it and unlocks DAST for
   that domain.
+- **Finding verification layer**: DAST findings are replayed and
+  compared against benign control requests where a strategy exists
+  (reflected XSS, error-based SQL injection, out-of-band hits) and now
+  carry a `confidence` label — `confirmed`, `likely`, `reported` or
+  `unverified` — with the evidence basis in `verification`.
+- **Authenticated DAST**: deep scans accept `auth_cookie` /
+  `auth_headers`, forwarded only to the DAST crawl and checks on the
+  job's own host and wiped from storage when the job finishes.
+- **Monitoring mode** (PRO): `POST /scan/monitor` registers a domain
+  for recurring passive scans (configurable interval, 1-168 hours);
+  every run stores the score/grade and a change diff (score delta, new
+  and resolved findings, certificate days remaining), readable via
+  `GET /scan/monitor` and `GET /scan/monitor/{id}`; `DELETE` stops it.
+- **Malware reputation check (lite)** in every passive scan:
+  `checks.malware_reputation` consults the Spamhaus DBL and SURBL
+  domain blocklists plus URL heuristics (IP-literal hosts, punycode,
+  shorteners, executable paths). A blocklist hit adds a high finding.
+  Deliberately a reputation check, not a full malware scan.
 
 ### Fixed
 - `security.txt` detection is stricter: a target now counts as publishing
