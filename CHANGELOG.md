@@ -4,6 +4,14 @@ All notable changes to the **Website Security Scanner API** — catalog #1 of
 dev-utility APIs. The format follows Keep a Changelog; versions match the
 `version` the API reports about itself.
 
+## [Unreleased]
+
+### Fixed
+-  detection is stricter: a target now counts as publishing
+  one only when the file is served as a non-HTML response containing a
+   field line (RFC 9116). WAF checkpoint and SPA fallback pages
+  returned with HTTP 200 can no longer produce a false "present" result.
+
 ## [2.2.0] — 2026-10-27
 
 ### Added
