@@ -6,6 +6,23 @@ dev-utility APIs. The format follows Keep a Changelog; versions match the
 
 ## [Unreleased]
 
+### Added
+- **Deep TLS analysis in every deep scan** (testssl.sh): protocol and
+  cipher enumeration, TLS vulnerability checks (BEAST, BREACH, SWEET32,
+  LUCKY13, Heartbleed, ROBOT, POODLE, and more) and certificate-chain
+  details, returned in a `tls_deep` result block. TLS vulnerabilities
+  are also folded into the job's findings.
+- **Active DAST checks for verified domains**: deep scans now crawl the
+  target (Katana) and run Nuclei DAST templates with out-of-band
+  (Interactsh) detection — reflected XSS, SQL injection, SSRF and more —
+  returned in a `dast` result block. DAST runs only on domains whose
+  ownership the API caller has verified; unverified domains receive a
+  `dast.skipped` note instead.
+- **Domain ownership verification** (PRO): `POST /scan/verify` issues a
+  token to place at `/.well-known/hhelll-verify.txt` or in a DNS TXT
+  record; `POST /scan/verify/confirm` checks it and unlocks DAST for
+  that domain.
+
 ### Fixed
 - `security.txt` detection is stricter: a target now counts as publishing
   one only when the file is served as a non-HTML response containing a

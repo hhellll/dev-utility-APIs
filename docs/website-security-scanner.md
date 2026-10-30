@@ -125,7 +125,7 @@ Returns `{"status": "ok"}` when the service is up.
 
 ### `POST /scan/deep`
 
-Starts an asynchronous **deep scan** — a Nuclei-powered active template scan of one host (exposures, misconfigurations, known-CVE templates) — and queues it for execution. Available on the **PRO** plan; each executed scan consumes **1 deep scan credit** (see [Plans and what you get](#plans-and-what-you-get)).
+Starts an asynchronous **deep scan** — a Nuclei-powered active template scan of one host (exposures, misconfigurations, known-CVE templates) plus a deep TLS analysis (testssl.sh) — and queues it for execution. For domains you have verified as yours (see `/scan/verify` below), the job also crawls the site and runs active DAST checks (XSS, SQL injection, SSRF, including out-of-band detection). Available on the **PRO** plan; each executed scan consumes **1 deep scan credit** (see [Plans and what you get](#plans-and-what-you-get)).
 
 | Parameter | Required | Notes |
 |---|---|---|
@@ -155,6 +155,44 @@ Queues **deep scans for multiple hosts in one request**. This is a **PRO** featu
 | `400` | Invalid URL, or the target resolves to a private/internal address — rejected before execution, no credit consumed |
 | `403` | Your plan does not include deep scans (BASIC), or the job belongs to a different API key |
 | `429` | Deep scan credits for this month are exhausted, or your plan's daily deep scan cap was reached |
+
+### `POST /scan/verify`
+
+Starts **domain ownership verification** (PRO only). Returns a token
+plus placement instructions. Verify a domain once to unlock DAST checks
+in deep scans of that domain — active testing is only ever run against
+domains the caller has proven they control.
+
+| Parameter | Required | Notes |
+|---|---|---|
+| `domain` | yes | The domain to verify (a full URL works too) |
+
+**Response `200`:**
+
+```json
+{
+  "domain": "example.com",
+  "status": "pending",
+  "token": "hhelll-verify-...",
+  "methods": {
+    "file":    { "url": "https://example.com/.well-known/hhelll-verify.txt", "content": "hhelll-verify-..." },
+    "dns_txt": { "host": "example.com", "value": "hhelll-verify-..." }
+  }
+}
+```
+
+### `POST /scan/verify/confirm`
+
+Checks whether the token from `/scan/verify` is live yet — either as
+the exact content of the well-known file, or inside a DNS TXT record
+for the domain. Returns `{ "verified": true, "method": "file" }` (or
+`"dns_txt"`), or `{ "verified": false }` with a hint when the token is
+not found yet. Re-calling after success is safe and reports the stored
+status.
+
+Deep scan results carry a `tls_deep` block on every job. A `dast`
+block appears when DAST ran (crawled endpoints, findings, summary);
+for unverified domains it contains a `skipped` note instead.
 
 ## What gets checked
 
