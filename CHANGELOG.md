@@ -1,7 +1,6 @@
 # Changelog
 
-All notable changes to the **Website Security Scanner API** — the flagship
-API documented in this repository. The format follows Keep a Changelog;
+All notable changes to the **Website Security Scanner API** — the API documented in this repository. The format follows Keep a Changelog;
 versions match the `version` the API reports about itself.
 
 ## [Unreleased]
