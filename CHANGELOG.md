@@ -52,6 +52,53 @@ versions match the `version` the API reports about itself.
   `Contact:` field line (RFC 9116). WAF checkpoint and SPA fallback pages
   returned with HTTP 200 can no longer produce a false "present" result.
 
+## [2.4.0] — 2026-11-07
+
+### Added
+- **Deep TLS sub-scores for PRO** — a `tls_deep` block on `GET|POST /scan`
+  and `GET /ssl` with SSL Labs-style sub-scores (protocol, key exchange
+  and cipher strength, 0–100 each, weighted 30/30/40 into an overall
+  TLS score), certificate-chain trust/completeness, OCSP stapling and
+  forward-secrecy assessment, computed from testssl.sh enumeration
+  data. The analysis runs in the background per host (deep scans fill
+  the cache from the testssl run they already perform) and is cached
+  for 7 days; while a host's first analysis is outstanding the block
+  reports `"status": "pending"` instead of blocking the response.
+  BASIC responses are unchanged.
+
+### Fixed
+- Deep TLS chain/OCSP parsing now handles multi-certificate hosts
+  (RSA + ECDSA), whose testssl results suffix their finding ids per
+  certificate.
+
+## [2.3.0] — 2026-11-06
+
+### Added
+- **Embeddable SVG score badge**: `GET /badge/{host}.svg` (or
+  `?host=`) — grade + score pill for READMEs and site footers,
+  reflecting the freshest stored full scan.
+- **Public report pages**: `GET /report/{host}` on scan.hhelll.my.id —
+  latest summary, per-category pass/fail, findings and a score-history
+  chart from all stored scans of the host.
+- **Header content-quality analysis**: CSP / HSTS / Referrer-Policy /
+  Permissions-Policy values are parsed and graded, not just checked
+  for presence (`checks.header_quality` in PRO scans; per-header
+  `quality` on PRO `/headers`), with findings for weak values.
+- **Fix snippets**: PRO findings carry copy-paste remediation config
+  (nginx, Apache, Cloudflare, WordPress/PHP headers, DNS records).
+- **Monitor webhooks**: PRO monitors accept `webhook_url` and POST a
+  JSON alert on score drops ≥5, new critical/high findings or
+  certificates expiring within 14 days (manageable via
+  `POST /scan/monitor/{id}/webhook`).
+
+### Fixed
+- Registrable-domain extraction now follows the real Public Suffix
+  List — multi-part suffixes were mis-resolved before (e.g. a domain
+  under `.my.id` inherited the suffix zone's SPF/DMARC records).
+- Standard scans are much faster: the Certificate Transparency lookup
+  now runs in parallel from the start of the scan with a bounded
+  budget and short-lived negative caching (~16 s → ~4 s typical).
+
 ## [2.2.0] — 2026-10-27
 
 ### Added
