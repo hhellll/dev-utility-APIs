@@ -347,4 +347,4 @@ Subscribe and manage your plan here: **[Website Security Scanner API on RapidAPI
 
 **Deep scan rules:** 1 credit = 1 host scanned. A scan that has been executed consumes its credit even if the target turns out to be unreachable or blocks the scanner — the work was performed. Invalid URLs and private/internal targets are rejected *before* execution and never consume a credit. Checking a job's status or fetching its result never consumes credits.
 
-The flagship API of [hhellll](https://github.com/hhellll) — see the [repository README](../README.md).
+Built and maintained by [hhellll](https://github.com/hhellll) — see the [repository README](../README.md).
