@@ -6,7 +6,7 @@
 
 Scan any public website's security posture in seconds — completely passively, with nothing installed on the target: HTTPS enforcement and TLS health, security headers, cookie flags, server information disclosure, exposed files such as `.env` and `.git`, mixed content, DNS and email authentication checks, Certificate Transparency subdomain surface, scan-to-scan change diffs, and outdated software matched against live CVE intelligence (EPSS exploit probability and CISA KEV active-exploitation data) — all rolled into one 0–100 score and a letter grade.
 
-*This repository previously catalogued the dev-utility APIs family; it now documents a single flagship — the Website Security Scanner API.*
+*This repository previously catalogued the dev-utility APIs family; it now documents a single API — the Website Security Scanner API.*
 
 **Live on RapidAPI → [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api)**
 
