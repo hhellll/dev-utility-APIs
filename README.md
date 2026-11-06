@@ -1,52 +1,16 @@
-![dev-utility-APIs](assets/banner-dark.png)
+![Website Security Scanner API](assets/banner-dark.png)
 
-# dev-utility-APIs
-![APIs](https://img.shields.io/badge/APIs-20_production-blue) ![Live on RapidAPI](https://img.shields.io/badge/RapidAPI-19_live-0055ff) ![License](https://img.shields.io/badge/License-MIT-green)
+# Website Security Scanner API
 
-**20 production APIs on RapidAPI** by **hhelll** — website security scanning, AI email writing, public holidays & business days, VAT & IBAN validation, geocoding, domain health checks, phone validation, postal codes, email validation, NLP utilities, OCR & PDF tools, speech-to-text, text-to-speech, translation, IP geolocation, website screenshots & PDF, currency/crypto prices, background removal, web page reading for AI agents, and weather forecasts. Small, focused, self-hosted APIs — each one does one job well, with a free plan to try it out.
-
-**19 APIs are live now.** The Weather API is built and running, and its listing is **launching soon**.
-
-## The API catalog
-
-| API | What it does | Free plan | Paid plan (PRO) |
-|---|---|---|---|
-| [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — [docs](docs/website-security-scanner.md) | Passive website security audit: HTTPS & TLS health, security headers, cookie flags, DNS & email security checks, exposed files (.env, .git), subdomain surface, scan history with change diffs, live CVE intelligence for detected software (EPSS scores and CISA KEV exploitation status), mixed content — with a 0–100 score and grade | 2 requests/month | $5 |
-| [AI Email Writer API](https://rapidapi.com/Hitler-HlDevZDwP/api/ai-email-writer-api) — [docs](docs/ai-email-writer.md) | AI email generation: write new emails, draft replies, and subject-line ideas — with tone control, in English and Indonesian | 5 requests/month | $5 |
-| [Holidays and Business Days API](https://rapidapi.com/Hitler-HlDevZDwP/api/holidays-and-business-days-api) — [docs](docs/holidays.md) | Public holidays for 200+ countries, is-holiday / is-workday checks, and business-day counting | 10 requests/month | $5 |
-| [VAT and IBAN Validation API](https://rapidapi.com/Hitler-HlDevZDwP/api/vat-and-iban-validation-api1) — [docs](docs/vat-iban.md) | EU VAT validation via the official VIES service, EU VAT rates, and IBAN validation with bank/BIC lookup | 5 requests/month | $5 |
-| [Geocoding API](https://rapidapi.com/Hitler-HlDevZDwP/api/geocoding-api5) — [docs](docs/geocoding.md) | Forward and reverse geocoding over 236k places worldwide (GeoNames), plus nearest postal codes | 5 requests/month | $5 |
-| [Domain Health API](https://rapidapi.com/Hitler-HlDevZDwP/api/domain-health-api) — [docs](docs/domain-health.md) | Domain health checks: DNS, SSL, RDAP/whois, email security (SPF/DMARC/MTA-STS), and an A–F health score | 5 requests/month | $5 |
-| [Phone Number Validation API](https://rapidapi.com/Hitler-HlDevZDwP/api/phone-number-validation-api3) — [docs](docs/phone-validation.md) | Parse and validate international phone numbers: carrier, line type, country, and timezones | 5 requests/month | $5 |
-| [Worldwide Postal Code API](https://rapidapi.com/Hitler-HlDevZDwP/api/worldwide-postal-code-api) — [docs](docs/postal-code.md) | 1.8M postal codes in 122 countries (GeoNames): lookup, place search, radius search, and distance between codes | 5 requests/month | $5 |
-| [Email Validation API](https://rapidapi.com/Hitler-HlDevZDwP/api/email-validation-api44) — [docs](docs/email-validation.md) | Validate email addresses: syntax, MX records, disposable & role-based detection, typo suggestions, and a 0–100 deliverability score | 5 requests/month | $5 |
-| [Text NLP Utilities API](https://rapidapi.com/Hitler-HlDevZDwP/api/text-nlp-utilities-api) — [docs](docs/text-nlp-utilities-api.md) | Summarize, sentiment analysis, keyword extraction, and language detection | 5 requests/month | $5 |
-| [OCR and PDF Tools API](https://rapidapi.com/Hitler-HlDevZDwP/api/ocr-and-pdf-tools-api) — [docs](docs/ocr-and-pdf-tools-api.md) | OCR for English & Indonesian, PDF text extraction, merge, and compress | 5 requests/month | $5 |
-| [Speech to Text API - Whisper Transcription](https://rapidapi.com/Hitler-HlDevZDwP/api/speech-to-text-api-whisper-transcription) — [docs](docs/speech-to-text-api-whisper-transcription.md) | Async audio transcription with subtitles (SRT/VTT), powered by Whisper | 5 requests/month | $5 |
-| [Text to Speech API - Natural Voices](https://rapidapi.com/Hitler-HlDevZDwP/api/text-to-speech-api-natural-voices) — [docs](docs/text-to-speech-api-natural-voices.md) | Text to speech with natural English (US/GB) and Indonesian voices | 5 requests/month | $5 |
-| [Translation API - EN ID ES FR DE JA](https://rapidapi.com/Hitler-HlDevZDwP/api/translation-api-en-id-es-fr-de-ja) — [docs](docs/translation-api-en-id-es-fr-de-ja.md) | Translation between EN, ID, ES, FR, DE, JA plus language detection | 5 requests/month | $1 |
-| [IP Geolocation API](https://rapidapi.com/Hitler-HlDevZDwP/api/ip-geolocation-api25) — [docs](docs/ip-geolocation-api.md) | IP address → country, city, timezone, and ASN — single or batch lookups | 5 requests/month | $1 |
-| [Website Screenshot and PDF API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-screenshot-and-pdf-api) — [docs](docs/website-screenshot-and-pdf-api.md) | Website screenshots, URL → PDF, and Open Graph images | 5 requests/month | $4 |
-| [Currency and Crypto Prices API](https://rapidapi.com/Hitler-HlDevZDwP/api/currency-and-crypto-prices-api) — [docs](docs/currency-and-crypto-prices-api.md) | Cached fiat exchange rates and crypto spot prices | 5 requests/month | $4 |
-| [Background Remover AI](https://rapidapi.com/Hitler-HlDevZDwP/api/background-remover-ai5) | Remove image backgrounds → transparent PNG (plus replace-background, blur-background, and image conversion endpoints) | 5 requests/month | $5 |
-| [Web Reader API](https://rapidapi.com/Hitler-HlDevZDwP/api/web-reader-api4) — [docs](docs/web-reader-api.md) | Turn any web page into clean, LLM-ready markdown or plain text, with title, author, date and word count — built for AI agents and RAG pipelines | 100 requests/month | $1 single PRO plan (10,000 requests, then $0.001 each) |
-| Weather API - Global Forecast — [docs](docs/weather-api-global-forecast.md) | Current weather, 7-day forecast, and geocoding | *launching soon* | — |
-
-## Get started (any API)
-
-1. Open the API's RapidAPI page from the table above and subscribe to a plan (every API has a free plan).
-2. Copy your `X-RapidAPI-Key` from the API playground.
-3. Call the API from any language — each API's docs page in [`docs/`](docs/) has endpoints and a cURL example, and the [`examples/`](examples/) folder has runnable code for several of them.
-
----
-
-## Featured API: Website Security Scanner API
+![Live on RapidAPI](https://img.shields.io/badge/RapidAPI-live-0055ff) ![BASIC](https://img.shields.io/badge/BASIC-free-brightgreen) ![PRO](https://img.shields.io/badge/PRO-%245%2Fmonth-blue) ![License](https://img.shields.io/badge/License-MIT-green)
 
 Scan any public website's security posture in seconds — completely passively, with nothing installed on the target: HTTPS enforcement and TLS health, security headers, cookie flags, server information disclosure, exposed files such as `.env` and `.git`, mixed content, DNS and email authentication checks, Certificate Transparency subdomain surface, scan-to-scan change diffs, and outdated software matched against live CVE intelligence (EPSS exploit probability and CISA KEV active-exploitation data) — all rolled into one 0–100 score and a letter grade.
 
+*This repository previously catalogued the dev-utility APIs family; it now documents a single flagship — the Website Security Scanner API.*
+
 **Live on RapidAPI → [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api)**
 
-**Try it free, no signup -> [Live demo](https://149-118-58-54.sslip.io/secscan-demo/)** — the summary view (score, grade, per-category pass/fail, subdomain count), the same shape the free BASIC plan returns.
+**Try it free, no signup → [scan.hhelll.my.id](https://scan.hhelll.my.id/)** — the official live scanner: score, grade, per-category pass/fail and findings, the same shape the free BASIC plan returns.
 
 ![Website Security Scanner API](assets/website-security-scanner.jpg)
 
@@ -64,6 +28,8 @@ Give the API a URL and it runs a full passive audit: it follows the redirect cha
 ### Quick start
 
 Subscribe on the API's [RapidAPI page](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) (there is a free plan), copy your `X-RapidAPI-Key` from the playground, then:
+
+A runnable version of these calls lives in [`examples/secscan_example.sh`](examples/secscan_example.sh).
 
 #### cURL
 
@@ -190,4 +156,4 @@ Subscribe and manage your plan here: **[Website Security Scanner API on RapidAPI
 
 ## License
 
-The example code in this repository is released under the [MIT License](LICENSE). The APIs themselves are hosted services provided via RapidAPI under their plan terms.
+The example code in this repository is released under the [MIT License](LICENSE). The API itself is a hosted service provided via RapidAPI under its plan terms.

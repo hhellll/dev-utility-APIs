@@ -1,8 +1,8 @@
 # Changelog
 
-All notable changes to the **Website Security Scanner API** — catalog #1 of
-dev-utility APIs. The format follows Keep a Changelog; versions match the
-`version` the API reports about itself.
+All notable changes to the **Website Security Scanner API** — the flagship
+API documented in this repository. The format follows Keep a Changelog;
+versions match the `version` the API reports about itself.
 
 ## [Unreleased]
 
@@ -40,6 +40,11 @@ dev-utility APIs. The format follows Keep a Changelog; versions match the
   domain blocklists plus URL heuristics (IP-literal hosts, punycode,
   shorteners, executable paths). A blocklist hit adds a high finding.
   Deliberately a reputation check, not a full malware scan.
+
+### Changed
+- **Repository focus**: this repository now documents the Website Security
+  Scanner API only. Documentation and examples for the other dev-utility
+  APIs were removed from the repo; those APIs themselves are unaffected.
 
 ### Fixed
 - `security.txt` detection is stricter: a target now counts as publishing
