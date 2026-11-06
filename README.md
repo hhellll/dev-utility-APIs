@@ -90,7 +90,7 @@ Just the response-header part of the audit: the six security headers, cookie fla
 
 #### `GET /ssl`
 
-Just the TLS part: certificate issuer and subject, validity window, days remaining, negotiated protocol and cipher, and whether legacy TLS 1.0/1.1 are still accepted.
+Just the TLS part: certificate issuer and subject, validity window, days remaining, negotiated protocol and cipher, and whether legacy TLS 1.0/1.1 are still accepted. On PRO, `/ssl` (and `/scan`) responses also carry a `tls_deep` block — SSL Labs-style protocol, key-exchange and cipher-strength sub-scores with certificate-chain, OCSP-stapling and forward-secrecy detail, computed in the background per host and cached for 7 days (see the [full docs](docs/website-security-scanner.md)).
 
 | Parameter | Required | Notes |
 |---|---|---|
@@ -146,6 +146,7 @@ Queues deep scans for multiple hosts in one request. **Plans:** PRO — each hos
 | | BASIC — Free | PRO — $5/mo |
 |---|---|---|
 | Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence & fix recommendations |
+| Deep TLS sub-scores (`tls_deep` on /scan & /ssl) | — | Yes — protocol / key-exchange / cipher scores, chain, OCSP & forward-secrecy detail |
 | CVE intelligence lookups (/cve/search, /cve/{cve_id}) | Full records | Full records |
 | Deep scan credits / month (Nuclei-powered active template scan) | — | 25 (max 5/day) |
 | Scan result history & change diffs | Yes | Yes |
