@@ -22,6 +22,12 @@ All notable changes to the **Website Security Scanner API** — the API document
 
 - `security.txt` detection is stricter: a target now counts as publishing one only when the file is served as a non-HTML response containing a `Contact:` field line (RFC 9116). WAF checkpoint and SPA fallback pages returned with HTTP 200 can no longer produce a false "present" result.
 
+## [2.7.0] — 2026-11-07
+
+### Added
+
+- **WordPress component & JavaScript library watchlist (PRO detail, non-scored)**: every scan now detects the WordPress plugins and themes a site actually loads — from asset URLs on the homepage and on the pages fetched by the multi-page crawl — and resolves their installed versions from asset `?ver=` parameters and, with the highest confidence, from each plugin's own `readme.txt` (`Stable tag:`) and each theme's `style.css` (`Version:`). Detected versions are matched against a local mirror of the **Wordfence Intelligence** vulnerability feed (daily sync, PHP-style version-range comparison); Wordfence records are reproduced with their record links and Defiant/MITRE attribution, as the feed licence requires. Popular JavaScript libraries (Lodash, Moment, jQuery UI, Select2, Swiper, Slick, Owl Carousel, DataTables, Fancybox) are detected the same way and matched against NVD/OSV. Results live in `checks.wp_components` with per-component version source and confidence, an open statement of the mirror's freshness (`data.fetched_at`, `data_age_days`), and `"scored": false`; matched vulnerabilities also appear as info findings with `"source": "wp_components"`, appended after scoring. While the Wordfence mirror is not populated yet, the block reports `"status": "no_data"` instead of guessing. Watchlist results never change the score — BASIC responses are byte-for-byte identical to v2.6.0.
+
 ## [2.6.0] — 2026-11-07
 
 ### Added

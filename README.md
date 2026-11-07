@@ -66,7 +66,7 @@ curl -X POST "https://website-security-scanner-api.p.rapidapi.com/scan" \
 
 ### Plans
 
-Two plans exist on RapidAPI: **BASIC** (free) and **PRO** ($5/month). **BASIC** includes the full passive scan, header and TLS checks and the live CVE results. **PRO** adds: deep TLS sub-scores and chain detail, header content-quality analysis, fix snippets on findings, the badge endpoint, public report pages, the monitoring webhooks, deep scans (active testssl.sh + DAST, domain verification required), monitoring mode with change diffs, and the complete watchlist (DNS/mail + next-generation headers), plus the multi-page crawl detail (`checks.crawl`) and crawl findings. Crawl results are reported with evidence and never change the score, so BASIC responses are unchanged. Quotas and prices live on the [RapidAPI listing](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — they are the source of truth.
+Two plans exist on RapidAPI: **BASIC** (free) and **PRO** ($5/month). **BASIC** includes the full passive scan, header and TLS checks and the live CVE results. **PRO** adds: deep TLS sub-scores and chain detail, header content-quality analysis, fix snippets on findings, the badge endpoint, public report pages, the monitoring webhooks, deep scans (active testssl.sh + DAST, domain verification required), monitoring mode with change diffs, and the complete watchlist (DNS/mail + next-generation headers), plus the multi-page crawl detail (`checks.crawl`) and crawl findings, and the WordPress component watchlist (`checks.wp_components`): detected plugins, themes and JavaScript libraries with resolved versions matched against a local Wordfence Intelligence mirror and NVD/OSV. Watchlist results are reported with evidence, state their data freshness openly, and never change the score. Crawl results are reported with evidence and never change the score, so BASIC responses are unchanged. Quotas and prices live on the [RapidAPI listing](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — they are the source of truth.
 
 ### Scan flow
 
@@ -97,6 +97,7 @@ The version lives in `CHANGELOG.md`, following Keep a Changelog — the API repo
 
 ## Versioning
 
+- [2.7.0] — 2026-11-07: WordPress component & JavaScript library watchlist — plugins/themes detected from page assets, versions resolved from `readme.txt`/`style.css`, matched against a local Wordfence Intelligence mirror (NVD/OSV for libraries); PRO detail in `checks.wp_components`, non-scored, BASIC unchanged.
 - [2.6.0] — 2026-11-07: limited multi-page crawl — up to 10 internal pages checked for mixed content and injection signals; PRO detail in `checks.crawl`, non-scored, BASIC unchanged.
 - [2.5.0] — 2026-11-07: DNS/mail watchlist (non-scored), next-generation header watchlist (non-scored), scoring methodology page.
 - [2.4.0] — 2026-11-07: deep TLS sub-scores for PRO; compressed-response fix.
