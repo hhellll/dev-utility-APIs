@@ -204,7 +204,7 @@ Simple uptime check. Returns `{"status": "ok"}` — everything responding.
 | **`summary`** | Counts by severity (`critical`, `high`, `medium`, `low`, `info`) |
 | **`findings`** | The issues found; each finding has a `severity`, a `title`, a `recommendation`, and a `fix` when available |
 | **`score`** | The total score, `0–100`, weighted by severity |
-| **`grade`** | Letter grade: `A+` to `F` in 8 steps (A+, A, B, C, D, E, F) |
+| **`grade`** | Letter grade: `A` to `F` in 5 steps (A, B, C, D, F) |
 | **`advanced`** | BASIC compact equivalents of the PRO checks (see v2.2.0 response fields above) |
 | **`methodology_url`** | https://scan.hhelll.my.id/methodology — the full public page of the scoring rubric |
 
@@ -224,7 +224,7 @@ The score is the sum of the deductions for these categories:
 | CVE intelligence | 10 per critical CVE; 5 per high CVE; 3 per medium CVE |
 | **Total** | **100** |
 
-Grades: `A+` 95–100, `A` 90–94, `B` 80–89, `C` 70–79, `D` 60–69, `E` 50–59, `F` 0–49.
+Grades: `A` ≥90, `B` ≥75, `C` ≥60, `D` ≥40, `F` <40.
 
 The complete rubric is published at https://scan.hhelll.my.id/methodology.
 
