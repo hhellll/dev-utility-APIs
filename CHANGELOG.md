@@ -22,6 +22,12 @@ All notable changes to the **Website Security Scanner API** — the API document
 
 - `security.txt` detection is stricter: a target now counts as publishing one only when the file is served as a non-HTML response containing a `Contact:` field line (RFC 9116). WAF checkpoint and SPA fallback pages returned with HTTP 200 can no longer produce a false "present" result.
 
+## [2.6.0] — 2026-11-07
+
+### Added
+
+- **Limited multi-page crawl (PRO detail, non-scored)**: every scan now also crawls up to 10 internal pages of the target — depth 1, same host only, robots.txt honoured, cross-host redirects recorded but never followed, under a hard 11-second budget with a per-page size cap. Each crawled page is checked for mixed content and for conservative, evidence-based injection signals: hidden iframes loading third-party content, heavily obfuscated inline scripts (eval/unescape-style execution combined with a long encoded payload), spam-keyword links pointing to external sites, and scripts loaded from uncommon third-party domains. Results live in `checks.crawl` with per-page status and the exact snippets that triggered each signal; aggregated crawl findings are appended to PRO reports with `"source": "crawl"`. Crawl results never change the score — BASIC responses are byte-for-byte identical to v2.5.0.
+
 ## [2.5.0] — 2026-11-07
 
 ### Added
