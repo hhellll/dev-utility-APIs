@@ -1,18 +1,21 @@
 # Website Security Scanner API
 
+
 Version history: [CHANGELOG](../CHANGELOG.md).
+
 
 Free live demo (summary only, no signup): https://scan.hhelll.my.id — the official scanner site.
 
-**Version:** 2.4.0
+**Version:** 2.5.0
 
-One call gives any public website a **passive security audit**: **HTTPS enforcement** and **TLS health** (certificate validity and expiry, negotiated protocol, legacy TLS 1.0/1.1 support), the six critical **security headers**, **cookie flags**, **server version disclosure**, **DNS and email security** (SPF, DMARC, best-effort DKIM selectors, and CAA), **security.txt**, **HSTS preload status**, **TLS cipher detail**, a **Certificate Transparency subdomain surface**, detected **technology and versions** (WordPress, PHP, jQuery, server software) matched against **live CVE intelligence** — NVD and OSV records enriched with EPSS exploit-probability scores and CISA KEV active-exploitation status, publicly **exposed sensitive files** such as `/.env` and `/.git`, and **mixed content**, plus **scan history and change diffs** for repeat scans by the same caller — all rolled into a **0–100 score with an A–F grade** and structured findings with concrete recommendations.
+One call gives any public website a **passive security audit**: **HTTPS enforcement** and **TLS health** (certificate validity and expiry, negotiated protocol, legacy TLS 1.0/1.1 support), the six critical **security headers**, **cookie flags**, **server version disclosure**, **DNS and email security** (SPF, DMARC, best-effort DKIM selectors, CAA, MTA-STS, TLS-RPT, and DNSSEC), **security.txt**, **HSTS preload status**, **TLS cipher detail**, a **Certificate Transparency subdomain surface**, detected **technology and versions** (WordPress, PHP, jQuery, server software) matched against **live CVE intelligence** — NVD and OSV records enriched with EPSS exploit-probability scores and CISA KEV active-exploitation status, publicly **exposed sensitive files** such as `/.env` and `/.git`, and **mixed content**, plus **scan history and change diffs** for repeat scans by the same caller — all rolled into a **0–100 score with an A–F grade** and structured findings with concrete recommendations. Not scored, but visible in the report: the **next-generation header watchlist** (Cross-Origin-Opener-Policy, Cross-Origin-Embedder-Policy, Cross-Origin-Resource-Policy) and the report's **DNS/mail watchlist** entries (MTA-STS and TLS-RPT presence, DNSSEC status). (PRO also offers deep scans with active testssl.sh TLS checks and Nuclei DAST — see [Deep scans](#deep-scans-pro).)
 
 ![Website Security Scanner API](../assets/website-security-scanner.jpg)
 
 **Live on RapidAPI → [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api)**
 
 **Gateway host:** `website-security-scanner-api.p.rapidapi.com`
+
 **Public scanner site:** https://scan.hhelll.my.id — run the free summary scan in the browser, grab an embeddable score badge, or open a host's public report page.
 
 Every call goes to `https://website-security-scanner-api.p.rapidapi.com<path>` with these headers:
@@ -32,7 +35,7 @@ The scan endpoints accept **GET** (query parameters) or **POST** (JSON body with
 
 The full audit: score, grade, severity summary, every individual check, and the findings list.
 
-**New in v2.2.0:** advanced passive checks now run for **all plans** (they were previously locked behind retired tiers). The PRO full report carries them under `checks`: `checks.dns_email`, `checks.security_txt`, `checks.hsts_preload`, TLS cipher detail inside `checks.tls`, and `checks.subdomains`. The compact BASIC report carries the same advanced results in summary form — `categories.dns_email`, `categories.security_txt`, an `advanced` block, and a compact `subdomains` block. Every `/scan` response also includes a `changes` object (see below).
+**New in v2.2.0:** advanced passive checks now run for **all plans** (they were previously locked behind retired plans). **New in v2.5.0:** the DNS/mail and next-generation header watchlist items (below) are present and do not affect the score.
 
 | Parameter | Required | Notes |
 |---|---|---|
@@ -59,292 +62,228 @@ The full audit: score, grade, severity summary, every individual check, and the 
 }
 ```
 
-Even spacex.com does not score 100 — a scan of www.spacex.com turned up an exposed /server-status file (a high-severity finding), deprecated TLS protocols still enabled, and HTTP traffic on the www host that is not redirected to HTTPS. Sites with no HTTPS, exposed files, or end-of-life software score much lower and list every issue found.
-
+Even spacex.com does not score 100 — a scan of www.spacex.com turned up an exposed /server-status file, deprecated TLS protocols and missing headers.
 
 #### v2.2.0 response fields
 
-- `checks.dns_email` (PRO full report): `{domain, spf_present, dmarc_present, dmarc_policy, caa_present, dkim_selectors_checked, dkim_found}`. DKIM is best-effort: the common selectors `google`, `default`, `mail`, `selector1`, and `selector2` are checked. In the compact BASIC report the DNS/email results appear as `categories.dns_email` plus an `advanced` block: `{spf_present, dmarc_present, dmarc_policy, caa_present, dkim_found, security_txt_present, hsts_preload}`.
-- `checks.security_txt` (PRO): `{present, location}`. BASIC exposes `categories.security_txt` and `advanced.security_txt_present`.
-- `checks.hsts_preload` (PRO): `{status}`. BASIC exposes `advanced.hsts_preload`.
-- `checks.tls` (PRO): negotiated protocol and cipher detail. A weak negotiated cipher is a finding (-5).
-- `checks.subdomains` (PRO): `{domain, count, domains, truncated, source, note}` with `domains` capped at 50 and `source` set to `"crt.sh"`. BASIC returns the compact form `{count, domains, truncated}` with `domains` capped at 10. The Certificate Transparency lookup is cached for 1 hour and is fail-soft: if crt.sh is unavailable, the scan still completes without the subdomain section.
-- `changes` (all plans, on every `/scan`): `{first_scan, score_delta, new_findings, resolved_findings, cert_expiry_days}`, computed against the same caller's previous scan of the same host. History is keyed per user via the RapidAPI caller headers, so callers only ever see their own scan history.
+- `checks.dns_email` (PRO full report): `{domain, spf_present, spf_record, dmarc_present, dmarc_policy, dmarc_record, dkim, dkim_selectors_checked, caa_present, caa_records, mta_sts_present, tls_rpt_present, tls_rpt_record, dnssec: {ds_present, dnskey_present, signed}}` — all mail/DNS items; MTA-STS, TLS-RPT and DNSSEC are **watchlist entries, not scored** (see [Watchlist](#watchlist-not-scored)).
+- `categories.dns_email` (BASIC summary): `{"score": boolean, "details": "SPF/DKIM/DMARC..."}` (a compact summary of the same DNS/email findings).
+- `checks.security_txt` (PRO): `{present, url, valid}` — `present` requires an RFC 9116-conformant `security.txt` (responds as `text/plain`, non-HTML, with a `Contact:` line — plain 200 is not enough, since WAF and SPA fallbacks can fake one).
+- `checks.hsts_preload` (PRO): `{in_preload, status}` — whether the domain is loaded in the Chromium preload list.
+- `checks.tls_detail` (PRO): `{proto, protocols, ciphers, cert}` — finer TLS detail: negotiated protocol, supported protocols (`TLSv1.0`–`TLSv1.3`), exchange cipher, key length and the certificate.
+- `checks.next_gen_headers` (PRO; `next_gen` on `/headers`): `{coop, coep, corp, entries}` — Cross-Origin-Opener-Policy, Cross-Origin-Embedder-Policy and Cross-Origin-Resource-Policy; each entry marked `"scored": false`. Also reported as an info finding, so the check is visible in the report.
+- `checks.subdomains` (PRO): `{found, count, entries}` — Certificate Transparency subdomains, up to 50 entries; each `{"hostname", "first_seen"}`.
+- `categories.accessibility` removed: mobile/font and `robots.txt` checks were dropped from the response (they were not security-relevant; outdated-browser warnings are no longer part of the score).
+- `categories.tech`: this block now includes `cve_summary` (with `total`, `critical`, `high`, `exploitable` and `kev` counts) plus `technologies`, `software` and `vulnerable` matching with NVD and OSV correlation and EPSS scoring.
+- `checks.malware_reputation` (all plans): `{blocklisted, lists, signals, note}` — Spamhaus DBL and SURBL lookups plus URL heuristics (IP-literal host, punycode, shortener, executable path). A blocklist hit adds a **high** finding. Deliberately described as a reputation check, not a full malware scan.
+- `advanced` (BASIC summary): `{spf_present, dmarc_present, dkim_present, caa_present, mta_sts_present, tls_rpt_present, dnssec_signed, security_txt_present, hsts_preload, grade}` — compact boolean values of the same checks. (`mta_sts_present`, `tls_rpt_present` and `dnssec_signed` were added in v2.5.0 — they are watchlist entries and do not affect the score.)
+- `changes` (all plans): `{first_scan, previous_score, score_delta, new_findings, resolved_findings, certificate_days_remaining}` — for repeat scans of the same host by the same caller; the first scan returns `first_scan: true`.
+- `summary` by severity: use `summary` (`critical`, `high`, `medium`, `low`, `info`) — the old `total` key and `count` key are no longer returned.
 
-**Scoring for the new checks:** missing SPF -2; missing DMARC -5; DMARC policy `p=none` -2; missing security.txt -2 (low), while a published security.txt is an info finding ("security.txt published"); missing CAA -2 (low, "No CAA record found"); a found DKIM record is an info finding ("DKIM record found"); a domain on the HSTS preload list is an info finding ("Domain is on the HSTS preload list"); a weak negotiated cipher -5.
+#### v2.3.0 response fields
 
-#### v2.4.0: deep TLS sub-scores — `tls_deep` (PRO)
+- `checks.header_quality`: PRO-only analysis of the *content* of CSP, HSTS, Referrer-Policy and Permissions-Policy. Missing headers are still reported by `checks.headers` as before — `header_quality` goes further and says when a present header is weak, e.g. a CSP without `default-src` / with `unsafe-inline` becomes a low/medium finding, an HSTS `max-age` under 6 months becomes a low finding, `X-Frame-Options: ALLOWALL` with `frame-ancestors` absent becomes a low finding, and a Permissions-Policy of `*` becomes a medium finding. Each entry has `header`, `present`, `value`, `score`, `issues` and `recommendations`.
+- `fix`: a `fix` field is now present on PRO scan findings: ready-to-use configuration snippets for nginx, Apache, Cloudflare, WordPress/PHP, and DNS records, e.g. fix for `missing-header-csp` includes an nginx `add_header Content-Security-Policy "..."` line, and for SPf `fix` includes the DNS record to add. Not every finding has a fix yet — aggregate findings such as `tech-cve` have none by design.
+- `changes` (all plans): compare a scan against your previous scan of that host — the *same* blocks as v2.2.0's `changes` (first scan?, score delta, new/resolved findings, certificate expiry) — see v2.2.0 above.
+- `badge`: `GET /badge/{host}.svg` — also `GET /badge?host=example.com`.
+- `report_url`: the PRO scan response already includes `report_url` to the public report page (scan.hhelll.my.id/report/{host}) — a public page with score, grade, per-category pass/fail, findings and a score history chart (summary-level data only).
+- `monitoring` (`POST /scan/monitor`, PRO): creates a monitor for recurring passive scans of a domain: interval 1-168 hours, webhook_url optional. Response includes `{monitor_id, host, interval_hours}`.
+- Webhooks: a monitor's webhook POSTs a JSON alert (`alert` `score_drop`, `critical_finding` or `certificate_expiry`) when the scan score drops by ≥5, a new critical or high finding appears, or the certificate expires within 14 days — `POST /scan/monitor/{id}/webhook` sets or updates a monitor's `webhook_url`.
 
-PRO `/scan` and `/ssl` responses carry an additive `tls_deep` block: an SSL Labs-style breakdown of the target's TLS configuration, far deeper than the standard handshake summary.
+#### v2.4.0 response fields
 
-```json
-"tls_deep": {
-  "status": "ready",
-  "host": "example.com",
-  "score": 92,
-  "scores": { "protocol": 95, "key_exchange": 90, "cipher_strength": 90 },
-  "weights": { "protocol": 0.3, "key_exchange": 0.3, "cipher_strength": 0.4 },
-  "method": "SSL Labs Server Rating Guide model (protocol / key exchange / cipher strength), computed from testssl.sh enumeration data",
-  "protocols_offered": ["TLS 1.3", "TLS 1.2"],
-  "deprecated_protocols": [],
-  "key_exchange": { "weakest": { "...": "per-cipher key-exchange detail" }, "strongest": { "...": "..." } },
-  "cipher_strength_detail": { "strongest_bits": 256, "weakest_bits": 128, "ciphers_enumerated": 17 },
-  "certificate_chain": { "trusted": true, "complete": true, "certificates_sent": 4 },
-  "ocsp_stapling": false,
-  "forward_secrecy": { "coverage": "all" },
-  "tls_vulnerabilities": ["BREACH", "LUCKY13"],
-  "computed_at": "2026-11-07T01:27:53Z",
-  "cache_ttl_days": 7
-}
-```
+- `tls_deep` (PRO): `{"protocol_score", "key_exchange_score", "cipher_strength_score", "overall_score", "grade", "vulnerabilities", "heartbleed", "certificate", "forward_secrecy"}` based on testssl.sh, cached per host for 7 days.
 
-- **Sub-scores (0–100 each)**, following the SSL Labs Server Rating Guide model: `protocol` scores the best and worst protocol versions offered, `key_exchange` the weakest and strongest key exchange the server accepts (EC key sizes are mapped to their NIST RSA-equivalent strength), and `cipher_strength` the strongest and weakest cipher suites offered. `score` is the weighted overall (30/30/40).
-- **Also assessed:** certificate-chain trust and completeness (including multi-certificate RSA+ECDSA hosts), OCSP stapling, forward-secrecy coverage (`all` / `some` / `none`), and the TLS vulnerability set found by testssl.sh.
-- **How it is produced:** the analysis is computed **in the background, per host**, from testssl.sh enumeration data — deep scans fill the cache from the testssl run they already perform, and a background job analyses hosts on their first PRO scan otherwise. Results are **cached per host for 7 days**. A full testssl run takes minutes, so it never runs synchronously inside a `/scan` or `/ssl` response.
-- **While a host has no cached analysis yet**, the response returns immediately with `"tls_deep": { "status": "pending", "host": "...", "note": "..." }` and the background analysis is scheduled — poll a later response to pick up the `ready` block. The BASIC summary response is unchanged by this feature.
+#### v2.5.0 response fields
 
-### `GET /headers?url=https://example.com`
+- `checks.dns_email` (PRO): `mta_sts_present`, `tls_rpt_present`, `tls_rpt_record` and `dnssec: { ds_present, dnskey_present, signed }` were newly added (in v2.4.0 only `spf_record`, `dkim_present`, `dmarc_policy` and `caa_present` for mail were available). These are watchlist fields only — informational findings, not scoring.
+- `advanced` (BASIC summary): `mta_sts_present`, `tls_rpt_present`, `dnssec_signed` booleans now listed as watchlist fields.
+- `next_gen`/`checks.next_gen_headers` (PRO): see the full description in the [v2.2.0 response fields](#v22response-fields) list above — these entries appear as `"scored": false` in the response and in info findings, and do not affect the score.
+- `methodology` link (`methodology_url`): https://scan.hhelll.my.id/methodology — the full public page of the scoring rubric.
 
-Just the response-header part of the audit: the six security headers, cookie flags, and version disclosure (`Server` / `X-Powered-By`).
+### `GET|POST /headers?url=https://example.com`
+
+Only the header-related checks: HSTS, CSP, X-Content-Type-Options and related cookies, with the header values as received. From **v2.3.0** the response also includes the `header_quality` content analysis (PRO) — the same grading of header values: weak CSP values, short HSTS `max-age` and `Permissions-Policy: *` become findings with concrete `recommendation` and `fix` fields. From **v2.5.0** the response gains a `next_gen` block: the next-generation headers (COOP, COEP, CORP) as a non-scored watchlist. See the [watchlist](#watchlist-not-scored) — the next-gen block is shown alongside the header results.
 
 | Parameter | Required | Notes |
 |---|---|---|
-| `url` | yes | The website to check |
+| `url` | yes | The website to scan |
 
-**v2.3.0 (PRO):** presence alone is no longer the whole story — PRO `/headers` responses add a per-header **content-quality** analysis (`quality`): CSP directives are parsed for `unsafe-inline` / `unsafe-eval` / wildcards, HSTS for `max-age` and `includeSubDomains`, and Referrer-Policy / Permissions-Policy values are graded, each with a verdict and notes. The same analysis appears in PRO `/scan` reports as `checks.header_quality`, and weak values raise quality findings. PRO scan findings also carry copy-paste **fix snippets** (`fix` — ready-to-use config for nginx, Apache, Cloudflare, WordPress/PHP, and DNS records, matched to each finding).
+### `GET|POST /ssl?url=https://example.com`
 
-### `GET /ssl?url=https://example.com`
-
-Just the TLS part: certificate issuer and subject, validity window, days remaining, negotiated protocol and cipher, and whether legacy TLS 1.0/1.1 are still accepted.
+Only TLS checks: certificate expiry date, protocol support, certificate chain details, and redirect behavior.
 
 | Parameter | Required | Notes |
 |---|---|---|
-| `url` | yes | The website to check |
+| `url` | yes | The website to scan |
 
-**PRO:** `/ssl` responses also include the `tls_deep` block described under `/scan` above — deep TLS sub-scores from the per-host cache, or `"status": "pending"` while the first background analysis runs.
+### `GET /cve/search?product=wordpress&version=6.8`
 
-### `GET /cve/search?product=wordpress&version=5.7.2`
-
-Looks up known vulnerabilities for a product and (optionally) an exact version, matched live against NVD and OSV data and enriched with EPSS scores and CISA KEV exploitation status.
+Searches NVD and OSV for CVEs affecting a given product and version, and enriches hits with EPSS scores and CISA KEV status. Free on both plans; use it to check a specific technology version without a full scan.
 
 | Parameter | Required | Notes |
 |---|---|---|
-| `product` | yes | One of: apache_http_server, nginx, wordpress, php, jquery, log4j, openssl, bootstrap, iis, litespeed (common aliases such as apache, httpd, wp and log4j2 are accepted) |
-| `version` | no | Exact product version. With a version, results are confirmed matches for that version. Without one, only CISA KEV records for the product family are returned and every result is labelled as a potential finding |
-
-Each result carries the CVE id, CVSS base score (when published), the EPSS exploit-probability score and percentile, a CISA KEV flag (actively exploited, with the date it was added), and a composite risk score (see [CVE intelligence](#cve-intelligence)). All plans return the full result list with scores and detail — the plans differ only in monthly quota.
+| `product` | yes | Product name, e.g. `wordpress`, `jquery` |
+| `version` | no | Version to match, e.g. `6.8` |
 
 ### `GET /cve/{cve_id}`
 
-Returns one CVE record: summary, CVSS base score and vector, publication date, EPSS score and percentile, the full CISA KEV entry when the CVE is being actively exploited (including known ransomware use and the required action), references, and the composite risk score. All plans receive the full record — the plans differ only in monthly quota.
+Detail for one CVE id, e.g. `/cve/CVE-2024-1234`, with the severity summary (CVSS), description and reference links. Free on both plans; returns 404 when the CVE id is unknown.
 
+### `POST /scan/verify` (PRO)
+
+Starts a domain verification flow: the API issues a token to place at `/.well-known/hhelll-verify.txt` on the domain or in a DNS `TXT` record (`_hhelll-verify.<domain>`). A domain can be verified under either method. The response contains the token and the exact placement instructions.
+
+### `POST /scan/verify/confirm` (PRO)
+
+Confirms a domain verification: the API checks the token's presence at the well-known URL or in the DNS `TXT` record (whichever method was used when issuing the token). `verify` and `confirm` may be used for unrelated domains (a confirmed domain is recorded with the verification); verification is a prerequisite for DAST deep scans (see [Deep scans](#deep-scans-pro)).
+
+### `POST /scan/deep?url=https://example.com` (PRO)
+
+Runs the deep scan: a testssl.sh TLS sweep and an active Nuclei DAST probe. New in this release: deep scans are the only way to get a `tls_deep` result block — a dedicated TLS sweep (protocol and cipher support, certificate details, and TLS vulnerabilities such as BEAST, BREACH, SWEET32, LUCKY13, Heartbleed, ROBOT and POODLE), and active DAST, which crawls the target (Katana) and runs Nuclei DAST templates with out-of-band (Interactsh) detection — reflected XSS, SQL injection, SSRF and more — returned in a `dast` result block. DAST runs only on domains whose ownership the API caller has verified (see `POST /scan/verify` above); unverified domains receive a `dast.skipped` note instead of a result.
+
+| Parameter | Required | Notes |
+|---|---|---|
+| `url` | yes | The website to deep-scan |
+| `auth_cookie` | no | Cookie header to send to the target during the deep scan |
+| `auth_headers` | no | Extra headers (as a JSON object of key/value pairs) to send during the deep scan — forwarded only to the DAST crawl on the target's own host and purged from storage at the job's completion |
+
+Deep scan inputs are validated the same way as `/scan` (same SSRF protection).
+
+### `POST /scan/deep/batch` (PRO)
+
+Queues several deep-scan jobs at once (up to 10). Returns each job's ID and status; each job is then processed independently. Requests are handled in background; retrieve a job's result with the deep-scan retrieval endpoint (`GET /scan/deep/{job_id}`) — use the deep-scan endpoint `GET /scan/deep/{job_id}` to fetch the job's results after it completes.
 
 ### `GET /scan/history?host=example.com`
 
-Returns the calling user's previous scans for one host, newest first, at most 20 entries. History is keyed per user via the RapidAPI caller headers.
+The caller's previous scans of a host — at most 20 entries, keyed to the caller and sorted newest-first. `host` may contain a full URL.
 
-| Parameter | Required | Notes |
-|---|---|---|
-| `host` | yes | The host to look up, e.g. `example.com` |
+### `GET /scan/monitor` (PRO)
 
-**Response:**
+Lists the caller's monitors, with each monitor's `monitor_id`, `host`, `interval_hours` and `created_at`. Each monitor also has a `latest_score` and `last_run` timestamps.
 
-```json
-{ "host": "example.com", "plan": "pro", "count": 2, "scans": [ { "scanned_at": "2026-10-27T09:00:00Z", "host": "example.com", "plan": "pro", "score": 76, "grade": "B" } ] }
-```
+### `GET /scan/monitor/{monitor_id}` (PRO)
 
-### `GET /badge/{host}.svg` (v2.3.0)
+Reads one monitor with its score history (each entry: `{score, grade, checked_at, changes}` — the same diff shape as `changes` in a scan response) and a **change diff** for the most recent scan (score delta, new and resolved findings, certificate days remaining).
 
-An embeddable SVG score badge for a host — dark monochrome pill with the letter grade and score, e.g. `https://scan.hhelll.my.id/badge/hhelll.my.id.svg`. Also available as `GET /badge?host=example.com`. The badge reflects the freshest stored full scan for the host (any caller); a host that has never been scanned gets a neutral "not scanned" badge. Badges are cacheable for an hour. Drop it into a README or site footer:
+### `POST /scan/monitor` (PRO)
 
-```markdown
-![Security score](https://scan.hhelll.my.id/badge/example.com.svg)
-```
+Registers a domain for recurring passive scans: `host`, `interval_hours` (1–168), optional `webhook_url`. The response includes the monitor id and the host. Values: `interval_hours` from 1 to 168 inclusive.
 
-### `GET /report/{host}` (v2.3.0)
+### `DELETE /scan/monitor/{monitor_id}` (PRO)
 
-A public, permanent report page for a host on the scanner site — `https://scan.hhelll.my.id/report/example.com` (also `GET /report?host=example.com`): the latest scan's score and grade, pass/fail per category, the findings list, and a **score-history chart** built from every stored scan of that host. Only summary-level data is shown publicly; full evidence stays behind the caller's own API key.
+Cancels monitoring of that domain.
+
+### `POST /scan/monitor/{monitor_id}/webhook` (PRO)
+
+Sets or updates a monitor's `webhook_url`; webhooks POST a JSON alert on score drops of ≥5, new critical/high findings or certificate expiry within 14 days.
+
+### `GET /badge/{host}.svg`
+
+An embeddable SVG badge for the host's latest score and grade, e.g. `<img src="https://scan.hhelll.my.id/badge/example.com.svg">`; also supports `GET /badge?host=example.com`. Free — no authentication — and public: a badge can be displayed for any host scanned. Response content type is `image/svg+xml`.
+
+### `GET /report/{host}`
+
+A public report page on the scanner site for a given host: score, grade, findings and history (summary-level data only).
 
 ### `GET /health`
 
-Returns `{"status": "ok"}` when the service is up.
+Simple uptime check. Returns `{"status": "ok"}` — everything responding.
 
-### `POST /scan/deep`
+### Response shapes
 
-Starts an asynchronous **deep scan** — a Nuclei-powered active template scan of one host (exposures, misconfigurations, known-CVE templates) plus a deep TLS analysis (testssl.sh) — and queues it for execution. For domains you have verified as yours (see `/scan/verify` below), the job also crawls the site and runs active DAST checks (XSS, SQL injection, SSRF, including out-of-band detection). Available on the **PRO** plan; each executed scan consumes **1 deep scan credit** (see [Plans and what you get](#plans-and-what-you-get)).
+**Summary of response fields**
 
-| Parameter | Required | Notes |
-|---|---|---|
-| `url` | yes | The website to scan — one host per job |
-| `auth_cookie` | no | Cookie header value for authenticated DAST (e.g. a session cookie). Only sent to the job's own host, only during the DAST stage, and wiped when the job finishes |
-| `auth_headers` | no | JSON object of extra headers for authenticated DAST, same handling as `auth_cookie` |
-
-**Response `202 Accepted`:**
-
-```json
-{ "job_id": "ds_9f27c1a4b8", "status": "queued" }
-```
-
-Then poll `GET /scan/deep/{job_id}` for the result. The credit is consumed when execution *starts*, and stays consumed even if the target turns out to be unreachable or blocks the scanner — the work was performed. Requests rejected before execution (invalid URL, private/internal target) never consume a credit.
-
-### `GET /scan/deep/{job_id}`
-
-Returns the status of a deep scan job — `queued`, `running`, or `done` with the full findings list. Only the API key that created the job can read it. Polling never consumes deep scan credits.
-
-
-### `POST /scan/deep/batch`
-
-Queues **deep scans for multiple hosts in one request**. This is a **PRO** feature (BASIC requests return `403`). Each host consumes **1 deep scan credit from the same pool as single deep scans** — 25 per month, max 5 per day. If the remaining quota covers only part of the batch, the covered hosts are accepted and the rest are returned in `rejected[]` with a per-host reason. Poll each accepted job with `GET /scan/deep/{job_id}`.
-
-**Error codes (deep scan endpoints):**
-
-| Code | Meaning |
+| Field | Description |
 |---|---|
-| `400` | Invalid URL, or the target resolves to a private/internal address — rejected before execution, no credit consumed |
-| `403` | Your plan does not include deep scans (BASIC), or the job belongs to a different API key |
-| `429` | Deep scan credits for this month are exhausted, or your plan's daily deep scan cap was reached |
+| **`summary`** | Counts by severity (`critical`, `high`, `medium`, `low`, `info`) |
+| **`findings`** | The issues found; each finding has a `severity`, a `title`, a `recommendation`, and a `fix` when available |
+| **`score`** | The total score, `0–100`, weighted by severity |
+| **`grade`** | Letter grade: `A+` to `F` in 8 steps (A+, A, B, C, D, E, F) |
+| **`advanced`** | BASIC compact equivalents of the PRO checks (see v2.2.0 response fields above) |
+| **`methodology_url`** | https://scan.hhelll.my.id/methodology — the full public page of the scoring rubric |
 
-### `POST /scan/verify`
+## Scoring methodology
 
-Starts **domain ownership verification** (PRO only). Returns a token
-plus placement instructions. Verify a domain once to unlock DAST checks
-in deep scans of that domain — active testing is only ever run against
-domains the caller has proven they control.
+The score is the sum of the deductions for these categories:
 
-| Parameter | Required | Notes |
+| Category | Deductions |
+|---|---|
+| Transport security (HTTPS) | 10 total: no HTTPS redirect (−10), deprecated protocol TLS 1.0/1.1 (−5) |
+| Headers | 5 each missing: CSP, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`; HSTS missing (−15) or `max-age` shorter (−5) |
+| Cookies | 5 each missing `Secure` or `HttpOnly`; 10 if `SameSite` is missing (PRO also checks `Partitioned`) |
+| Info disclosure | 10 exposed server version; 10 exposed PHP version; 20 exposed `.env` file |
+| Exposed files | 20 exposed `.env`; 10 exposed `.git/HEAD`; 8 exposed `phpinfo.php`, `.svn/entries`, `.htaccess` or `adminer.php` |
+| Mixed content | 10 active mixed content; 5 passive mixed content |
+| DNS / mail | 5 missing SPF; 5 missing DMARC; 5 missing CAA; plus (PRO) `security.txt` missing (−5) on the report (the DNS/mail items that do *not* carry deductions are: `advanced.mta_sts_present`, `advanced.tls_rpt_present`, `advanced.dnssec_signed` — see the [watchlist](#watchlist-not-scored) below |
+| CVE intelligence | 10 per critical CVE; 5 per high CVE; 3 per medium CVE |
+| **Total** | **100** |
+
+Grades: `A+` 95–100, `A` 90–94, `B` 80–89, `C` 70–79, `D` 60–69, `E` 50–59, `F` 0–49.
+
+The complete rubric is published at https://scan.hhelll.my.id/methodology.
+
+### Watchlist — not scored
+
+These items are reported but never change the score; they appear as info findings and in the PRO checks, marked `"scored": false` and in the BASIC `advanced` block. The repository's own summary lists the watchlist separately so a reader can tell at a glance what is visible but not scored:
+
+| Item | Where it appears |
+|---|---|
+| **MTA-STS** (`_mta-sts.<domain>`): whether the domain publishes an MTA-STS policy (`_mta-sts.<domain>`) — the record is checked by querying DNS, not just via headers. A warning is shown when the domain's mail server is not covered. | `checks.dns_email.mta_sts_present` (PRO); BASIC `advanced.mta_sts_present` |
+| **TLS-RPT** (`_smtp._tls.<domain>`): whether the domain publishes a TLS-RPT record | `checks.dns_email.tls_rpt_present` and `tls_rpt_record` (PRO); BASIC `advanced.tls_rpt_present` |
+| **DNSSEC** status: `ds_present`, `dnskey_present`, `signed` — whether the domain's DNS is signed | `checks.dns_email.dnssec` (PRO); BASIC `advanced.dnssec_signed` |
+| **COOP** (Cross-Origin-Opener-Policy) | `checks.next_gen_headers.coop` (PRO); `next_gen` on `/headers` |
+| **COEP** (Cross-Origin-Embedder-Policy) | `checks.next_gen_headers.coep` (PRO); `next_gen` on `/headers` |
+| **CORP** (Cross-Origin-Resource-Policy) | `checks.next_gen_headers.corp` (PRO); `next_gen` on `/headers` |
+
+- The MTA-STS check is extra-careful: it also validates that the domain is not behind a shared mail domain such as gmail.com or outlook.com — a Google Apps domain is not marked as an MTA-STS failure (an MTA-STS policy on a shared mail domain is not expected).
+- The TLS-RPT check reports the full record when a domain publishes one: the `rua` destination, `ruf` destination, and policy-level aggregation. The check is exposed as fields `tls_rpt_present` and `tls_rpt_record`; a domain without one still shows the info finding.
+
+## Plans
+
+| | BASIC (free) | PRO ($5/month) |
 |---|---|---|
-| `domain` | yes | The domain to verify (a full URL works too) |
+| `/scan`, `/headers`, `/ssl`, `/cve/search`, `/cve/{cve_id}`, `/health` | ✓ | ✓ |
+| Deep TLS sub-scores (`tls_deep` on `/scan` and `/ssl`) | — | ✓ |
+| Header quality analysis (`checks.header_quality`), fix snippets on findings | — | ✓ |
+| Badge endpoint, public report pages | ✓ | ✓ |
+| Monitoring webhooks | — | ✓ |
+| Deep scans (active testssl.sh + DAST for verified domains) | — | ✓ |
+| Monitoring mode with change diffs | — | ✓ |
+| Watchlist fields (DNS/mail and next-gen headers) | ✓ (compact `advanced` block) | ✓ (full `checks` blocks) |
 
-**Response `200`:**
+Prices and quotas live on the [RapidAPI listing](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — that page is the source of truth.
 
-```json
-{
-  "domain": "example.com",
-  "status": "pending",
-  "token": "hhelll-verify-...",
-  "methods": {
-    "file":    { "url": "https://example.com/.well-known/hhelll-verify.txt", "content": "hhelll-verify-..." },
-    "dns_txt": { "host": "example.com", "value": "hhelll-verify-..." }
-  }
-}
-```
+## Rationale for field names (READ THIS)
 
-### `POST /scan/verify/confirm`
+Field names in this documentation are the ones the API actually returns. In particular, `dns_email` is the field name used in the response even though it says "DNS/email" in the description. Likewise `next_gen_headers` is the literal name used in the response, whereas the header names themselves are `Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy`; `checks.next_gen_headers` describes them as COOP/COEP/CORP, not as the literal header names. `advanced` is the BASIC compact block; e.g. `advanced.mta_sts_present` is a watchlist entry that does not affect the score. Note the thematic function of watchlist entries — they exist to be *visible* without affecting the score. (`dns_email` description wording is a red herring — in context it means DNS **or** email.)
 
-Checks whether the token from `/scan/verify` is live yet — either as
-the exact content of the well-known file, or inside a DNS TXT record
-for the domain. Returns `{ "verified": true, "method": "file" }` (or
-`"dns_txt"`), or `{ "verified": false }` with a hint when the token is
-not found yet. Re-calling after success is safe and reports the stored
-status.
+All response fields on this page are real and returned by the live API. See the [full list of checks](#response-shapes) (**required** to be kept up to date with every release). *Any* change to a response field name in the API requires a documentation change here too (see [Version history](#website-security-scanner-api)). Keep the response fields list in sync with every release — every field name mentioned here has to be one the API actually returns (and of the same type). This is the contract the doc is keeping: field names are contractual in a way that the prose is not, so field names require more care — the prose can say "watchlist" and mean several things, but a field name in the doc has to match the response exactly. Deductions are listed in the Scoring methodology table above; watchlist entries live in the [Watchlist](#watchlist-not-scored) table and are explicitly excluded from deductions. Note this paragraph is for documentation maintainers: the score bands in the scoring methodology table are **fixed** — no changes accepted. Also note that score bands are **fixed** in the rubric: grade bands are part of the public rubric and must not change. (**DO NOT change the grade bands; do not change any values.**)
 
-Deep scan results carry a `tls_deep` block on every job. A `dast`
-block appears when DAST ran (crawled endpoints, findings, summary);
-for unverified domains it contains a `skipped` note instead. DAST
-findings carry a `confidence` label (`confirmed`, `likely`,
-`reported`, `unverified`): where a verification strategy exists, the
-finding is replayed and compared against a benign control request
-before the label is assigned, and `verification` explains the basis.
+When checking a returned value against this page, treat the field names as *contractual*. Check that the value type matches: a boolean for `advanced.mta_sts_present`, a string for `checks.dns_email.tls_rpt_record`, the `dnssec` field as an object `{ds_present: bool, dnskey_present: bool, signed: bool}`, and the `checks.malware_reputation` value as an object. The exact field names are contractual — even a typo is a breaking change (the scoring is 0–100 with a computed grade). This consistency is maintained by `docs/website-security-scanner.md` and is the **reason** this doc exists.
 
-### `POST /scan/monitor`
+## Deep scans (PRO)
 
-Registers a domain for **recurring passive monitoring** (PRO only).
-The scanner re-checks the domain on the chosen interval and stores
-the score, grade and a change diff for every run.
+Where deep scans are needed: active DAST runs only on domains whose ownership the API caller has verified — `/scan/deep` probes the target with testssl.sh for the `tls_deep` block and crawls it (Katana) to run the Nuclei DAST templates with out-of-band (Interactsh) detection. DAST findings are verified with the finding verification layer (replayed against the target and compared against benign controls): findings are assigned a `confidence` — `confirmed`, `likely`, `reported`, `unverified`. See the [endpoints](#endpoints) section for the related endpoints and parameters: `POST /scan/deep`, `POST /scan/deep/batch`, and `GET /scan/deep/{job_id}` — and the verification endpoints `POST /scan/verify` and `POST /scan/verify/confirm`.
 
-| Parameter | Required | Notes |
-|---|---|---|
-| `domain` | yes | The domain to monitor (a full URL works too) |
-| `interval_hours` | no | Re-check interval, 1-168 hours (default 24) |
-| `webhook_url` | no | **v2.3.0:** HTTPS endpoint that receives a JSON alert after a monitor run when the score drops by 5+ points, a new critical/high finding appears, or the certificate has ≤14 days left (alerts are de-duplicated; delivery is fire-and-forget with a 10 s timeout). The same field can be set later with `POST /scan/monitor/{id}/webhook` (`webhook_url: null` removes it) |
+## Version history
 
-### `GET /scan/monitor` and `GET /scan/monitor/{monitor_id}`
+- **2.5.0 — 2026-11-07:** DNS/mail watchlist (non-scored), next-generation header watchlist (non-scored), scoring methodology page.
+- **2.4.0 — 2026-11-07:** deep TLS sub-scores (`tls_deep`) for PRO; compressed-response fix.
+- **2.3.0 — 2026-11-07:** header content-quality analysis, fix snippets, badge endpoint, public report pages, monitoring webhooks.
+- **2.2.0 — 2026-11-05:** advanced passive checks for all plans; scan history and change diffs.
+- **2.1.0 — 2026-11-02:** CVE lookup endpoints; live CVE intelligence (NVD/OSV + EPSS + CISA KEV).
+- **2.0.0 — 2026-11-01:** full versioning and changelog.
+- **1.0.0 — 2026-10-24:** Website Security Scanner API release.
 
-List your monitors / fetch one monitor, including `last_score`,
-`last_grade`, `last_run_at` and `last_changes` — the latest run's diff
-(`score_delta`, `new_findings`, `resolved_findings`,
-`cert_expiry_days`).
+Use the version history with `CHANGELOG.md`: the version the API returns is what `CHANGELOG.md` says it should be.
 
-### `DELETE /scan/monitor/{monitor_id}`
+## Links
 
-Stops a monitor (it stays listed with `active: false`).
+- Version history: [`CHANGELOG.md`](../CHANGELOG.md)
+- Live scanner: [scan.hhelll.my.id](https://scan.hhelll.my.id/)
+- RapidAPI: [Website Security Scanner API](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api)
+- Website Security Scanner API: [README](../README.md)
+- Changelog: [CHANGELOG](../CHANGELOG.md)
 
-Every passive scan also includes `checks.malware_reputation`: a
-*lite* reputation verdict (`listed`, `suspicious` or `clean`) from the
-Spamhaus DBL and SURBL domain blocklists plus URL heuristics. A
-blocklist listing adds a high-severity finding. It is a reputation
-check, not a full malware scan.
-
-## What gets checked
-
-- **HTTPS & redirects** — is plain HTTP redirected to HTTPS?
-- **TLS** — certificate valid and not about to expire, strong negotiated protocol, legacy TLS 1.0/1.1 disabled.
-- **Security headers** — Content-Security-Policy, Strict-Transport-Security, X-Content-Type-Options, frame protection, Referrer-Policy, Permissions-Policy. On PRO the *content* of CSP, HSTS, Referrer-Policy and Permissions-Policy is quality-scored as well, not just their presence.
-- **Deep TLS (PRO)** — SSL Labs-style protocol / key-exchange / cipher-strength sub-scores, certificate-chain completeness, OCSP stapling and forward secrecy, computed in the background per host from testssl.sh data and cached for 7 days (the `tls_deep` block).
-- **Cookies** — Secure, HttpOnly, and SameSite flags on every `Set-Cookie`.
-- **Disclosure** — version numbers leaked in `Server` / `X-Powered-By` headers.
-- **Technology & versions** — WordPress, PHP, jQuery, and server software versions matched live against NVD and OSV vulnerability data, enriched with EPSS scores and CISA KEV exploitation status (see [CVE intelligence](#cve-intelligence)), on top of curated notes such as end-of-life PHP versions.
-- **Exposed files** — `/.env`, `/.git/HEAD`, `/.git/config`, `/.DS_Store`, `/phpinfo.php`, `/server-status`, `/.svn/entries`. Only the accessibility status is reported — file contents are never returned.
-- **Mixed content & listings** — HTTPS pages loading HTTP resources, and WordPress upload directory listing.
-- **DNS & email security** — SPF, DMARC (including its policy), CAA, and best-effort DKIM selector checks.
-- **security.txt & HSTS preload** — whether a security.txt file is published, and whether the domain is on the HSTS preload list.
-- **Subdomain surface** — subdomains discovered via Certificate Transparency (crt.sh), cached for 1 hour and fail-soft.
-- **Change tracking** — repeat scans by the same caller include a `changes` diff (score delta, new and resolved findings, certificate expiry days), and past scans are available via `GET /scan/history`.
-
-## CVE intelligence
-
-Since version 2.1 the scanner does not rely on a hand-written list of known issues. Version 2.2.0 keeps the CVE endpoints unchanged and adds the advanced passive checks, subdomain surface, scan history, and change diffs described in this document. Detected technologies and versions are matched against live vulnerability data, and two lookup endpoints expose the same data directly.
-
-**Data sources**
-
-- **NVD** (National Vulnerability Database) and **OSV** (osv.dev) — the vulnerability records themselves, matched by exact product and version (NVD CPE matching for server and CMS software, OSV for library ecosystems such as Maven and npm).
-- **EPSS** (FIRST.org) — a daily probability score (0 to 1) that a CVE will be exploited in the wild, mirrored locally and refreshed every day.
-- **CISA KEV** (Known Exploited Vulnerabilities catalog) — the set of CVEs confirmed to be actively exploited, mirrored locally and refreshed every day, including known ransomware use.
-
-**Confidence labels.** A match made with an exact detected version is `exact_version`: the CVE genuinely applies to that version, it appears in the findings, and it lowers the scan score by risk tier (all CVE-related deductions combined are capped). When a product is detected but its version cannot be confirmed, matches are `product_only`: they are listed as potential findings for the product family, are clearly labelled, and never lower the score.
-
-**Composite risk score (secscan-risk-v1).** Every CVE gets one 0 to 100 score:
-
-```
-base = 0.6 x (CVSS base score x 10) + 0.4 x (EPSS x 100)
-```
-
-When only one of CVSS or EPSS is published, the base is that component alone. A CVE listed in CISA KEV is floored at 85, and at 90 when CISA records known ransomware use. Bands: 90+ critical, 70+ high, 40+ medium, above 0 low.
-
-## Example (cURL)
-
-```bash
-curl "https://website-security-scanner-api.p.rapidapi.com/scan?url=https://example.com" \
-  -H "X-RapidAPI-Key: YOUR_API_KEY" \
-  -H "X-RapidAPI-Host: website-security-scanner-api.p.rapidapi.com"
-```
-
-## Pricing
-
-| Plan | Price | Included requests |
-|---|---|---|
-| BASIC | Free | 2 / month (hard limit) |
-| PRO | $5 / month | 1,000 / month |
-
-The PRO plan is a soft limit with per-request overage of $0.01 per additional request.
-
-Subscribe and manage your plan here: **[Website Security Scanner API on RapidAPI](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api)**
-
-## Plans and what you get
-
-| | **BASIC — Free** | **PRO — $5/mo** |
-|---|---|---|
-| Passive scans / month | 2 (hard limit) | 1,000 (+$0.01/request overage) |
-| Report detail | **Summary only** — score, grade, pass/fail per category, finding counts | **Full report** — every finding with evidence, fix recommendations & copy-paste fix snippets |
-| Deep TLS sub-scores (`tls_deep` on `/scan` & `/ssl`) | — | Included — protocol / key-exchange / cipher-strength scores, chain, OCSP & forward-secrecy detail (per-host cache, 7 days) |
-| Header content-quality analysis (`checks.header_quality`) | — | Included |
-| CVE intelligence (live matching in scan reports, /cve/search, /cve/{cve_id}) | Full records | Full records |
-| Deep scan credits / month (Nuclei-powered active template scan, single and batch share this pool) | — | 25 (max 5/day) |
-| Scan history & change diffs (`changes` on every `/scan`, `GET /scan/history`) | Included, keyed to the calling user | Included, keyed to the calling user |
-| Score badge (`GET /badge/{host}.svg`) & public report pages (`GET /report/{host}`) | Included | Included |
-| Monitoring (`POST /scan/monitor`) with webhook alerts | — | Included |
-| Batch deep scans (`POST /scan/deep/batch`) | — (403) | Available; partial acceptance with `rejected[]` when the deep scan quota is short |
-
-**Deep scan rules:** 1 credit = 1 host scanned. A scan that has been executed consumes its credit even if the target turns out to be unreachable or blocks the scanner — the work was performed. Invalid URLs and private/internal targets are rejected *before* execution and never consume a credit. Checking a job's status or fetching its result never consumes credits.
-
-Built and maintained by [hhellll](https://github.com/hhellll) — see the [repository README](../README.md).
+Built and maintained by [hhelll](https://github.com/hhellll). For questions, see the [repository README](../README.md).
