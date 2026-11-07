@@ -6,9 +6,9 @@ Version history: [CHANGELOG](../CHANGELOG.md).
 
 Free live demo (summary only, no signup): https://scan.hhelll.my.id — the official scanner site.
 
-**Version:** 2.5.0
+**Version:** 2.6.0
 
-One call gives any public website a **passive security audit**: **HTTPS enforcement** and **TLS health** (certificate validity and expiry, negotiated protocol, legacy TLS 1.0/1.1 support), the six critical **security headers**, **cookie flags**, **server version disclosure**, **DNS and email security** (SPF, DMARC, best-effort DKIM selectors, CAA, MTA-STS, TLS-RPT, and DNSSEC), **security.txt**, **HSTS preload status**, **TLS cipher detail**, a **Certificate Transparency subdomain surface**, detected **technology and versions** (WordPress, PHP, jQuery, server software) matched against **live CVE intelligence** — NVD and OSV records enriched with EPSS exploit-probability scores and CISA KEV active-exploitation status, publicly **exposed sensitive files** such as `/.env` and `/.git`, and **mixed content**, plus **scan history and change diffs** for repeat scans by the same caller — all rolled into a **0–100 score with an A–F grade** and structured findings with concrete recommendations. Not scored, but visible in the report: the **next-generation header watchlist** (Cross-Origin-Opener-Policy, Cross-Origin-Embedder-Policy, Cross-Origin-Resource-Policy) and the report's **DNS/mail watchlist** entries (MTA-STS and TLS-RPT presence, DNSSEC status). (PRO also offers deep scans with active testssl.sh TLS checks and Nuclei DAST — see [Deep scans](#deep-scans-pro).)
+One call gives any public website a **passive security audit**: **HTTPS enforcement** and **TLS health** (certificate validity and expiry, negotiated protocol, legacy TLS 1.0/1.1 support), the six critical **security headers**, **cookie flags**, **server version disclosure**, **DNS and email security** (SPF, DMARC, best-effort DKIM selectors, CAA, MTA-STS, TLS-RPT, and DNSSEC), **security.txt**, **HSTS preload status**, **TLS cipher detail**, a **Certificate Transparency subdomain surface**, detected **technology and versions** (WordPress, PHP, jQuery, server software) matched against **live CVE intelligence** — NVD and OSV records enriched with EPSS exploit-probability scores and CISA KEV active-exploitation status, publicly **exposed sensitive files** such as `/.env` and `/.git`, and **mixed content**, plus **scan history and change diffs** for repeat scans by the same caller — all rolled into a **0–100 score with an A–F grade** and structured findings with concrete recommendations. Not scored, but visible in the report: the **next-generation header watchlist** (Cross-Origin-Opener-Policy, Cross-Origin-Embedder-Policy, Cross-Origin-Resource-Policy) and the report's **DNS/mail watchlist** entries (MTA-STS and TLS-RPT presence, DNSSEC status). Since v2.6.0, a **limited multi-page crawl** (up to 10 internal pages, PRO detail, not scored) also checks the crawled pages for mixed content and conservative, evidence-based injection signals. (PRO also offers deep scans with active testssl.sh TLS checks and Nuclei DAST — see [Deep scans](#deep-scans-pro).)
 
 ![Website Security Scanner API](../assets/website-security-scanner.jpg)
 
@@ -99,6 +99,11 @@ Even spacex.com does not score 100 — a scan of www.spacex.com turned up an exp
 - `checks.dns_email` (PRO): `mta_sts_present`, `tls_rpt_present`, `tls_rpt_record` and `dnssec: { ds_present, dnskey_present, signed }` were newly added (in v2.4.0 only `spf_record`, `dkim_present`, `dmarc_policy` and `caa_present` for mail were available). These are watchlist fields only — informational findings, not scoring.
 - `advanced` (BASIC summary): `mta_sts_present`, `tls_rpt_present`, `dnssec_signed` booleans now listed as watchlist fields.
 - `next_gen`/`checks.next_gen_headers` (PRO): see the full description in the [v2.2.0 response fields](#v22response-fields) list above — these entries appear as `"scored": false` in the response and in info findings, and do not affect the score.
+
+#### v2.6.0 response fields
+
+- `checks.crawl` (PRO): `{status, scored: false, note, max_pages, budget_seconds, elapsed_ms, pages_discovered, pages_blocked_by_robots, pages_fetched, robots: {fetched, disallow_rules}, pages: [{url, homepage, fetched, status, bytes, signals, mixed_content}], external_script_hosts: [{host, known_good, pages}], findings, findings_count}` — the limited depth-1 crawl of internal pages: same host as the final URL only, robots.txt Disallow rules honoured, cross-host redirects recorded but never followed, hard 11-second total budget, 256 KB per page. Per-page `signals` can include `mixed_content`, `hidden_iframe`, `obfuscated_script`, `spam_links` and `uncommon_external_script`.
+- Crawl findings (PRO `findings`, each with `"source": "crawl"` and an `evidence` list of `{page, snippet}`): hidden third-party iframes (medium), heavily obfuscated inline scripts (medium), injected spam-keyword links to external sites (medium when hidden, otherwise low), mixed content on crawled subpages (low), and scripts loaded from uncommon third-party domains (info). They are appended after scoring: they never change the score, the `summary` counts, or any BASIC response.
 - `methodology` link (`methodology_url`): https://scan.hhelll.my.id/methodology — the full public page of the scoring rubric.
 
 ### `GET|POST /headers?url=https://example.com`
@@ -199,7 +204,7 @@ Simple uptime check. Returns `{"status": "ok"}` — everything responding.
 | **`summary`** | Counts by severity (`critical`, `high`, `medium`, `low`, `info`) |
 | **`findings`** | The issues found; each finding has a `severity`, a `title`, a `recommendation`, and a `fix` when available |
 | **`score`** | The total score, `0–100`, weighted by severity |
-| **`grade`** | Letter grade: `A+` to `F` in 8 steps (A+, A, B, C, D, E, F) |
+| **`grade`** | Letter grade: `A` to `F` in 5 steps (A, B, C, D, F) |
 | **`advanced`** | BASIC compact equivalents of the PRO checks (see v2.2.0 response fields above) |
 | **`methodology_url`** | https://scan.hhelll.my.id/methodology — the full public page of the scoring rubric |
 
@@ -219,7 +224,7 @@ The score is the sum of the deductions for these categories:
 | CVE intelligence | 10 per critical CVE; 5 per high CVE; 3 per medium CVE |
 | **Total** | **100** |
 
-Grades: `A+` 95–100, `A` 90–94, `B` 80–89, `C` 70–79, `D` 60–69, `E` 50–59, `F` 0–49.
+Grades: `A` ≥90, `B` ≥75, `C` ≥60, `D` ≥40, `F` <40.
 
 The complete rubric is published at https://scan.hhelll.my.id/methodology.
 
@@ -235,6 +240,7 @@ These items are reported but never change the score; they appear as info finding
 | **COOP** (Cross-Origin-Opener-Policy) | `checks.next_gen_headers.coop` (PRO); `next_gen` on `/headers` |
 | **COEP** (Cross-Origin-Embedder-Policy) | `checks.next_gen_headers.coep` (PRO); `next_gen` on `/headers` |
 | **CORP** (Cross-Origin-Resource-Policy) | `checks.next_gen_headers.corp` (PRO); `next_gen` on `/headers` |
+| **Page crawl signals** (hidden iframes, obfuscated scripts, spam-keyword links, uncommon third-party script hosts, subpage mixed content) | `checks.crawl` (PRO); findings carry `"source": "crawl"` and evidence snippets |
 
 - The MTA-STS check is extra-careful: it also validates that the domain is not behind a shared mail domain such as gmail.com or outlook.com — a Google Apps domain is not marked as an MTA-STS failure (an MTA-STS policy on a shared mail domain is not expected).
 - The TLS-RPT check reports the full record when a domain publishes one: the `rua` destination, `ruf` destination, and policy-level aggregation. The check is exposed as fields `tls_rpt_present` and `tls_rpt_record`; a domain without one still shows the info finding.
@@ -251,6 +257,7 @@ These items are reported but never change the score; they appear as info finding
 | Deep scans (active testssl.sh + DAST for verified domains) | — | ✓ |
 | Monitoring mode with change diffs | — | ✓ |
 | Watchlist fields (DNS/mail and next-gen headers) | ✓ (compact `advanced` block) | ✓ (full `checks` blocks) |
+| Limited multi-page crawl (`checks.crawl` + crawl findings) | — (BASIC responses unchanged) | ✓ |
 
 Prices and quotas live on the [RapidAPI listing](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — that page is the source of truth.
 
@@ -268,6 +275,7 @@ Where deep scans are needed: active DAST runs only on domains whose ownership th
 
 ## Version history
 
+- **2.6.0 — 2026-11-07:** limited multi-page crawl (`checks.crawl`, PRO detail, non-scored): mixed content and injection signals on up to 10 internal pages.
 - **2.5.0 — 2026-11-07:** DNS/mail watchlist (non-scored), next-generation header watchlist (non-scored), scoring methodology page.
 - **2.4.0 — 2026-11-07:** deep TLS sub-scores (`tls_deep`) for PRO; compressed-response fix.
 - **2.3.0 — 2026-11-07:** header content-quality analysis, fix snippets, badge endpoint, public report pages, monitoring webhooks.

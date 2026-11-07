@@ -18,7 +18,7 @@ Scan any public website's security posture in seconds — completely passively, 
 
 ### What it does
 
-Give the API a URL and it runs a full passive audit: it follows the redirect chain, inspects the TLS certificate and protocol support, checks six security headers and cookie flags, fingerprints the technology stack and matches detected versions against live CVE data, enriched with EPSS scores and CISA KEV status, probes a list of commonly exposed files, and looks for mixed content. It also checks DNS and email authentication (SPF, DMARC, DKIM selectors, and CAA), looks for a published security.txt and HSTS preload status, maps the Certificate Transparency subdomain surface, and records each caller's scans so repeat scans show what changed. Private and internal targets are refused (SSRF-protected) — it only scans public sites, and it never includes the contents of any exposed file, only that the path responded.
+Give the API a URL and it runs a full passive audit: it follows the redirect chain, inspects the TLS certificate and protocol support, checks six security headers and cookie flags, fingerprints the technology stack and matches detected versions against live CVE data, enriched with EPSS scores and CISA KEV status, probes a list of commonly exposed files, and looks for mixed content. It also crawls up to ten internal pages of the site (same host only, robots.txt honoured) and checks each page for mixed content and conservative, evidence-based injection signals — hidden third-party iframes, heavily obfuscated scripts, injected spam links and uncommon third-party script hosts. It also checks DNS and email authentication (SPF, DMARC, DKIM selectors, and CAA), looks for a published security.txt and HSTS preload status, maps the Certificate Transparency subdomain surface, and records each caller's scans so repeat scans show what changed. Private and internal targets are refused (SSRF-protected) — it only scans public sites, and it never includes the contents of any exposed file, only that the path responded.
 
 | | |
 |---|---|
@@ -66,7 +66,7 @@ curl -X POST "https://website-security-scanner-api.p.rapidapi.com/scan" \
 
 ### Plans
 
-Two plans exist on RapidAPI: **BASIC** (free) and **PRO** ($5/month). **BASIC** includes the full passive scan, header and TLS checks and the live CVE results. **PRO** adds: deep TLS sub-scores and chain detail, header content-quality analysis, fix snippets on findings, the badge endpoint, public report pages, the monitoring webhooks, deep scans (active testssl.sh + DAST, domain verification required), monitoring mode with change diffs, and the complete watchlist (DNS/mail + next-generation headers). Quotas and prices live on the [RapidAPI listing](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — they are the source of truth.
+Two plans exist on RapidAPI: **BASIC** (free) and **PRO** ($5/month). **BASIC** includes the full passive scan, header and TLS checks and the live CVE results. **PRO** adds: deep TLS sub-scores and chain detail, header content-quality analysis, fix snippets on findings, the badge endpoint, public report pages, the monitoring webhooks, deep scans (active testssl.sh + DAST, domain verification required), monitoring mode with change diffs, and the complete watchlist (DNS/mail + next-generation headers), plus the multi-page crawl detail (`checks.crawl`) and crawl findings. Crawl results are reported with evidence and never change the score, so BASIC responses are unchanged. Quotas and prices live on the [RapidAPI listing](https://rapidapi.com/Hitler-HlDevZDwP/api/website-security-scanner-api) — they are the source of truth.
 
 ### Scan flow
 
@@ -97,6 +97,7 @@ The version lives in `CHANGELOG.md`, following Keep a Changelog — the API repo
 
 ## Versioning
 
+- [2.6.0] — 2026-11-07: limited multi-page crawl — up to 10 internal pages checked for mixed content and injection signals; PRO detail in `checks.crawl`, non-scored, BASIC unchanged.
 - [2.5.0] — 2026-11-07: DNS/mail watchlist (non-scored), next-generation header watchlist (non-scored), scoring methodology page.
 - [2.4.0] — 2026-11-07: deep TLS sub-scores for PRO; compressed-response fix.
 - [2.3.0] — 2026-11-07: header content-quality analysis, fix snippets, badge endpoint, public report pages, monitoring webhooks.
