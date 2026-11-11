@@ -5,6 +5,7 @@
 
 
 ![Live on RapidAPI](https://img.shields.io/badge/RapidAPI-live-0055ff)![BASIC](https://img.shields.io/badge/BASIC-free-brightgreen) ![PRO](https://img.shields.io/badge/PRO-%245%2Fmonth-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+[![Verified on FreeAPI](https://findfreeapi.com/api/badge/dev-utility-apis)](https://findfreeapi.com/en/service/dev-utility-apis)
 
 Scan any public website's security posture in seconds — completely passively, with nothing installed on the target: HTTPS enforcement and TLS health, security headers, cookie flags, server information disclosure, exposed files such as `.env` and `.git`, mixed content, DNS and email authentication checks, Certificate Transparency subdomain surface, scan-to-scan change diffs, and outdated software matched against live CVE intelligence (EPSS exploit probability and CISA KEV active-exploitation data) — all rolled into one 0–100 score and a letter grade.
 
