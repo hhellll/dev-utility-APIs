@@ -117,3 +117,10 @@ The version lives in `CHANGELOG.md`, following Keep a Changelog — the API repo
 - License: [MIT](LICENSE)
 
 Built and maintained by [hhelll](https://github.com/hhellll).
+## Contributing
+
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Security
+
+For vulnerability reports, see [SECURITY.md](SECURITY.md). Please do not open public issues for security vulnerabilities.
